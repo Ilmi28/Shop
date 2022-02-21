@@ -1,0 +1,25 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "PCs";
+}
+<div class="main-content">
+    <h2>Available products:</h2>
+    <a asp-action="AddProduct" asp-controller="Home"><button class="btn btn-dark add-product-btn">Add Product</button></a>
+    <hr />
+    <br />
+    <br />
+    <ul>
+        @foreach(var PCs in Model)
+        {
+            <li class="item-block">
+                <div class="item-content">
+                    <span class="item-name">@PCs.Name</span>
+                    <span class="item-price">Price: @PCs.Price$</span>
+                </div>
+            </li>
+            <br />
+        }
+    </ul>
+</div>

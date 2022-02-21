@@ -1,0 +1,45 @@
+﻿@*
+    ShopFor more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Create";
+}
+@model Shop.Models.PC
+<h1>Create</h1>
+<br />
+<form asp-action="Create" id="pc-create-form">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input id="pc-name-input" asp-for="Name" class="form-control"/>
+        <small id="pc-name-error"></small>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for=Price></label>
+        <input id="pc-price-input" class="form-control" asp-for=Price/>
+        <small id="pc-price-error"></small>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for=Processor></label>
+        <input id="pc-processor-input" class="form-control" asp-for=Processor/> 
+        <small id="pc-processor-error"></small>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for=GraphicCard></label>
+        <input id="pc-graphiccard-input" asp-for=GraphicCard class="form-control"/>
+        <small id="pc-graphiccard-error"></small>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for=RAM></label>
+        <input id="pc-ram-input" asp-for=RAM class="form-control"/>
+        <small id="pc-ram-error"></small>
+    </div>
+    <br />
+    <br />
+    <input type="submit" value="Create" class="btn btn-dark submit-button"/>
+    <br />
+</form>
+<script src="~/js/pcCreateFormValidation.js"></script>

@@ -1,0 +1,59 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    int counter = 1;
+    ViewData["Title"] = "Monitors";
+}
+<div class="main-content">
+    <h2>Available products:</h2>
+    <a asp-action="AddProduct" asp-controller="Home" class="btn btn-dark add-product-btn">Add Product</a>
+    <hr />
+    <br />
+    <br />
+    <ul>
+        @foreach(var monitor in Model)
+        {
+            <li class="item-block">
+                <div class="item-content">
+                    <div class="photo-block"><img class="item-photo" src="~/img/@monitor.MonitorPhoto" asp-append-version="true"></div>
+                    <span class="item-name">@monitor.Name</span>
+                    <span class="item-price">Price: @monitor.Price$</span>
+                    <a class="monitors-see-more" asp-controller="Monitors" asp-action="Details" asp-route-id="@monitor.Id">See More</a>
+                    <ul class="counter">
+                        <li class="btn btn-dark minus" id="minus-@counter" onclick="decrease_@counter ()">-</li>
+                        <li class="btn btn-white quantity"><input style="width: 30px" id="number-@counter" value="0" disabled/></li>
+                        <li class="btn btn-dark plus" id="plus-@counter" onclick="increase_@counter ()">+</li>  
+                    </ul>
+                    <script>
+                        var minus = document.getElementById("minus-@counter");
+                        var plus_@counter = document.getElementById("plus-@counter");
+                        var number_@counter = document.getElementById("number-@counter");
+                        var num_@counter = 0;
+                        var max = 30;
+                        var min = 0;
+                        function increase_@counter (){
+                            if(num_@counter < max){
+                                num_@counter = num_@counter + 1;
+                                
+                            }
+                            number_@counter .value = num_@counter;                            
+                        }
+                        function decrease_@counter (){
+                            if(num_@counter > min){
+                                num_@counter = num_@counter - 1;
+                                
+                            }
+                            number_@counter .value = num_@counter;                            
+                        }
+                    </script>
+                    <a class=" btn btn-success monitors-add-to-cart-btn" ><i class="bi bi-cart"></i>Add to cart</a>
+                    <a class="btn btn-warning item-edit-btn" asp-controller="Monitors" asp-action="Edit" asp-route-id="@monitor.Id">Edit</a>
+                    <a class="btn btn-danger item-delete-btn" asp-controller="Monitors" asp-action="Delete" asp-route-id="@monitor.Id">Delete</a>
+                </div>
+            </li>
+            <br />
+            counter++;
+        }
+    </ul>
+</div>
