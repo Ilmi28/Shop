@@ -27,7 +27,7 @@ form.addEventListener('submit', (x) => {
         monitorPhoto.classList.remove("is-valid");
         console.log(document.getElementById("form-title").innerHTML);
     }
-    if (/[^a-zA-z0-9-()]/.test(monitorName.value)) {
+    if (!/^[^-\s][a-zA-Z0-9_\s-]+$/.test(monitorName.value)) {
         x.preventDefault();
         monitorNameError.innerHTML = "You can only use special characters like '-()'";
         monitorName.classList.remove("is-valid");

@@ -42,7 +42,7 @@ namespace Shop.Controllers
                 return View();
             }
             //You can change default photo name in the appsettings.json file
-            //After changing photo name in config file you should also upload your own photo file with name which should be same as in the config
+            //After changing photo name in config file you should also upload your own photo file with name which should be the same as in the config
             string defaultMonitorImage = _configuration["DefaultMonitorImage"];
             string photoFileName = UploadFile(viewModel);
             if (photoFileName == null)
