@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Shop.Models
+namespace Shop.ViewModels
 {
-    public class User
+    public class SignUpViewModel
     {
         [Required]
         public string Name { get; set; }
@@ -10,7 +10,6 @@ namespace Shop.Models
         [EmailAddress]
         public string Email { get; set; }
         [Required]
-        [MinLength(4)]
         public string Password { get; set; }
     }
 }

@@ -15,6 +15,7 @@ namespace Shop.Data
                 .Ignore(c => c.AccessFailedCount)
                 .Ignore(c => c.TwoFactorEnabled)
                 .Ignore(c => c.ConcurrencyStamp)
+                .Ignore(c => c.PhoneNumber)
                 .Ignore(c => c.PhoneNumberConfirmed);
                                         
         }

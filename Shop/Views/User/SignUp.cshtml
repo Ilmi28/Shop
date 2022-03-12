@@ -1,0 +1,31 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model Shop.ViewModels.SignUpViewModel
+@{
+}
+<h1>Sign Up</h1>
+<br />
+<form asp-action="SignUp" id="register-form">
+    <div class="form-group">
+        <label asp-for=Name></label>
+        <input asp-for="Name" id="register-name-input" class="form-control"/>
+        <small id="register-name-error"></small>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for=Email></label>
+        <input asp-for="Email" class="form-control" id="register-email-input"/>
+        <small id="register-email-error"></small>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for=Password></label>
+        <input asp-for="Password" class="form-control" id="register-password-input" type="password"/>
+        <small id="register-password-error"></small>
+    </div>
+    <br />
+    <br />
+    <input type="submit" class="btn btn-dark submit-button" value="Sign Up"/>
+</form>
+<script src=~/js/registerFormValidation.js></script>

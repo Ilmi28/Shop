@@ -11,18 +11,22 @@
     <hr />
     <br />
     <br />
+    @if(Model.Count == 0)
+        {
+            <h1>Nothing found here;(</h1>
+        }
     <ul>
         @foreach(var monitor in Model)
         {
             <li class="item-block">
                 <div class="item-content">
-                    <div class="photo-block"><img class="item-photo" src="~/img/@monitor.MonitorPhoto" asp-append-version="true"></div>
+                    <div class="photo-block"><div class="photo-block"><img class="item-photo" src="~/img/@monitor.MonitorPhoto" asp-append-version="true"></div></div>
                     <span class="item-name">@monitor.Name</span>
                     <span class="item-price">Price: @monitor.Price$</span>
                     <a class="monitors-see-more" asp-controller="Monitors" asp-action="Details" asp-route-id="@monitor.Id">See More</a>
                     <ul class="counter">
                         <li class="btn btn-dark minus" id="minus-@counter" onclick="decrease_@counter ()">-</li>
-                        <li class="btn btn-white quantity"><input style="width: 30px" id="number-@counter" value="0" disabled/></li>
+                        <li class="btn"><input style="width: 30px" id="number-@counter" value="0" disabled/></li>
                         <li class="btn btn-dark plus" id="plus-@counter" onclick="increase_@counter ()">+</li>  
                     </ul>
                     <script>
@@ -47,7 +51,7 @@
                             number_@counter .value = num_@counter;                            
                         }
                     </script>
-                    <a class=" btn btn-success monitors-add-to-cart-btn" ><i class="bi bi-cart"></i>Add to cart</a>
+                    <a class="btn btn-success monitors-add-to-cart-btn" ><i class="bi bi-cart"></i>Add to cart</a>
                     <a class="btn btn-warning item-edit-btn" asp-controller="Monitors" asp-action="Edit" asp-route-id="@monitor.Id">Edit</a>
                     <a class="btn btn-danger item-delete-btn" asp-controller="Monitors" asp-action="Delete" asp-route-id="@monitor.Id">Delete</a>
                 </div>

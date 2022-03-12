@@ -5,7 +5,7 @@
     ViewData["Title"] = "See more";
 }
 <h1 class="display-5 item-name-details">@Model.Name</h1>
-<img class="item-photo-details" src=~/img/@Model.MonitorPhoto/>
+<div class="photo-block-details"><img class="item-photo-details" src=~/img/@Model.MonitorPhoto/></div>
 <div class="item-parameters-details">
     <p>Price: @Model.Price</p>
     <p>Resolution: @Model.Resolution</p>
@@ -13,7 +13,7 @@
 </div>
 <ul class="counter-details">
     <li class="btn btn-dark minus-details" id="minus-details" onclick="decrease()">-</li>
-    <li class="btn btn-light number-details" id="number-details">0</li>
+    <li class="btn"><input style="width: 30px" disabled value="0" id="number-details"/></li>
     <li class="btn btn-dark plus-details" id="plus-details" onclick="increase()">+</li>
 </ul>
 <a><button class="btn btn-success add-to-cart-btn"><i class="bi bi-cart"></i>Add to cart</button></a>

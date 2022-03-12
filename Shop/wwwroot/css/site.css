@@ -25,8 +25,8 @@ html {
     opacity: 100%;
     z-index: 1;
 }
-.sticky + .content{
-    padding-top: 70px;
+.sticky + .content {
+    padding-top: 65px;
 }
 body {
     margin-bottom: 60px;
@@ -73,8 +73,14 @@ body {
 .item-photo {
     height: 170px;
     border-radius: 10px;
-    position: absolute;
+    position: relative;
     max-width: 320px;
+}
+.photo-block {
+    width: 310px;
+    position: absolute;
+    display: flex;
+    justify-content: center;
 }
 .item-content{
     position: relative;
@@ -210,10 +216,17 @@ body {
 .item-photo-details{
     height: 250px;
     border-radius: 10px;
-    position: absolute;
+    position: relative;
     margin-left: 0px;
-    top: 120px;
+    top: 0px;
     max-width: 440px;
+}
+.photo-block-details {
+    position: absolute;
+    width: 450px;
+    top: 130px;
+    display: flex;
+    justify-content: center;
 }
 .item-name-details{
     position: absolute;
@@ -229,7 +242,7 @@ body {
 }
 .add-to-cart-btn{
     position: absolute;
-    left: 81.2%;
+    left: 76%;
     margin-top: 270px;
     height: 40px;
 }
@@ -275,14 +288,96 @@ body {
 }
 .counter-details {
     position: absolute;
-    left: 80%;
+    left: 75%;
     margin-top: 225px;
     height: 40px;
+}
+.counter-details li{
+    display: inline;
+    margin-left: -8px;
 }
 .minus-details:hover, .plus-details:hover{
     background-color: white;
     color: black;
     border: solid black 1px;
+}
+.sign-up-btn, .log-out-btn  {
+    position: absolute;
+    right: 15px;
+    color: black;
+}
+.sign-up-btn:hover {
+    background-color: #212429;
+    color: white;
+    border: solid white 1px;
+}
+.sign-in-btn{
+    color: black;
+    position: absolute;
+    right: 95px;
+}
+.sign-in-btn:hover {
+    color: white;
+    background-color: #212429;
+    border: solid white 1px;
+}
+.sign-in-button:hover{
+    color: black;
+    background-color: white;
+    border: solid black 1px;
+}
+/* Dropdown Button */
+.dropdown-user-menu-btn {
+    background-color: #212429;
+    color: white;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+/* The container <div> - needed to position the dropdown content */
+.dropdown-user-menu {
+    position: absolute;
+    right: 60px;
+    display: inline-block;
+}
+/* Dropdown Content (Hidden by Default) */
+.dropdown-user-menu-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 90px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    text-align: center;
+    right: -16px;
+    margin-top: 10px;
+}
+/* Links inside the dropdown */
+.dropdown-user-menu-content a {
+    color: black;
+    padding: 5px 2px;
+    text-decoration: none;
+    display: block;
+}
+/* Change color of dropdown links on hover */
+.dropdown-user-menu-content a:hover {
+    background-color: #ddd
+}
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {
+    display: block;
+}
+@media (max-width: 575px){
+    .sign-up-btn {
+        position: relative;
+        margin-left: 84px;
+    }
+
+    .sign-in-btn {
+        position: relative;
+        margin-left: 94px;
+        top: 34px;
+    }
 }
 @media (max-width: 768px) {
     .item-block{
@@ -301,6 +396,11 @@ body {
         width: 200px;
         left: 20px;
         
+    }
+    .photo-block-details{
+        justify-content: left;
+        width: 0px;
+        position: absolute;
     }
     .item-photo{
         display: block;
@@ -343,24 +443,24 @@ body {
         position: absolute;
     }
     .add-to-cart-btn{
-        position: relative;
-        left: -1%;
-        top: 25px;
+        position: absolute;
+        left: 2%;
+        top: 300px;
     }
     .form-group{
         width: 95%;
     }
     .monitors-add-to-cart-btn{
-        left: 20px;
-        bottom: 50px;
+        left: 15px;
+        top: 330px;
     }
     .counter{
         left: -5px;
-        top: 300px;
+        top: 235px;
     }
     .counter-details{
-        position: relative;
-        left: -6%;
+        position: absolute;
+        left: -2%;
         top: 300px;
     }
 }

@@ -9,12 +9,13 @@ namespace Shop.ViewModels
         [Required]
         public string Name { get; set; }
         [Required]
-        public float Price { get; set; }
+        public float Price { get; set; } 
         [Required]
-        public string Resolution { get; set; }
+        public string Resolution { get; set; }        
+        [Display(Name = "Refresh rate")]
         [Required]
-        [Display(Name = "Refresh rate(Hz)")]
         public string Refreshening { get; set; }
+        [Required]
         public int? CategoryId { get; set; }
         public bool DefaultPhoto { get; set; } = true;
         public IFormFile? MonitorPhoto { get; set; }

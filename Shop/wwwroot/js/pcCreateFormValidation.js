@@ -1,23 +1,23 @@
 ﻿//inputs
-const pcName = document.getElementById("pc-name-input");
-const pcPrice = document.getElementById("pc-price-input");
-const pcProcessor = document.getElementById("pc-processor-input");
-const pcGraphicCard = document.getElementById("pc-graphiccard-input");
-const pcRAM = document.getElementById("pc-ram-input");
+const PC_NAME = document.getElementById("pc-name-input");
+const PC_PRICE = document.getElementById("pc-price-input");
+const PC_PROCCESSOR = document.getElementById("pc-processor-input");
+const PC_GRAPHIC_CARD = document.getElementById("pc-graphiccard-input");
+const PC_RAM = document.getElementById("pc-ram-input");
 //errors
-const pcNameError = document.getElementById("pc-name-error");
-const pcPriceError = document.getElementById("pc-price-error");
-const pcProcessorError = document.getElementById("pc-processor-error");
-const pcGraphicCardError = document.getElementById("pc-graphiccard-error");
-const pcRAMError = document.getElementById("pc-ram-error");
+const PC_NAME_ERROR = document.getElementById("pc-name-error");
+const PC_PRICE_ERROR = document.getElementById("pc-price-error");
+const PC_PROCCESSOR_ERROR = document.getElementById("pc-processor-error");
+const PC_GRAPHIC_CARD_ERROR = document.getElementById("pc-graphiccard-error");
+const PC_RAM_ERROR = document.getElementById("pc-ram-error");
 //form
-const form = document.getElementById("pc-create-form");
+var form = document.getElementById("pc-create-form");
 
 form.addEventListener('submit', (x) => {
-    emptyFieldCheck(pcName, pcNameError, x);
-    emptyFieldCheck(pcPrice, pcPriceError, x);
-    emptyFieldCheck(pcProcessor, pcProcessorError, x);
-    emptyFieldCheck(pcGraphicCard, pcGraphicCardError, x);
-    emptyFieldCheck(pcRAM, pcRAMError, x);
+    emptyFieldCheck(PC_NAME, PC_NAME_ERROR, x);
+    emptyFieldCheck(PC_PRICE, PC_PRICE_ERROR, x);
+    emptyFieldCheck(PC_PROCCESSOR, PC_PROCCESSOR_ERROR, x);
+    emptyFieldCheck(PC_GRAPHIC_CARD, PC_GRAPHIC_CARD_ERROR, x);
+    emptyFieldCheck(PC_RAM, PC_RAM_ERROR, x);
 
 });

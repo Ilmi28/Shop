@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Identity
+@using Shop.Models;
+@using Shop.Services
+@inject UserManager<AppUser> userManager
+@inject SignInManager<AppUser> signInManager
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -35,6 +41,30 @@
                                 </div> 
                             </div>
                         </li>
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            <li>
+                                <div class="dropdown-user-menu">
+                                    <button onclick="toggleFunc()" class="dropdown-user-menu-btn" id="user-name-button">@(User.FindFirst("Name")?.Value) ⮟</button>
+                                    <div id="dropdown-user-content" class="dropdown-user-menu-content">
+                                        <a asp-controller="User" asp-action="Logout">Log out</a>
+                                  </div>
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="User" asp-action="SignIn">
+                                    <input type="button" class="btn btn-light sign-in-btn" value="Sign in"/>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-controller="User" asp-action="SignUp">
+                                    <input type="button" class="btn btn-light sign-up-btn" value="Sign up"/>
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
