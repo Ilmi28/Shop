@@ -4,19 +4,19 @@
 @model Shop.ViewModels.SignInViewModel
 @{
 }
-<h1>Login</h1>
+<h1>Sign in</h1>
 <br />
-<form asp-action="SignIn">
+<form asp-action="SignIn" id="sign-in-form">
     <div class="form-group">
         <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control"/>
+        <input asp-for="Email" class="form-control"/>        
     </div>
     <br />
     <div class="form-group">
         <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control"/>
+        <input asp-for="Password" type="password" class="form-control"/>       
     </div>
-    <br />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-check">
         <label asp-for="RememberMe" class="form-check-label"></label>
         <input asp-for="RememberMe" type="checkbox" class="form-check-input"/>

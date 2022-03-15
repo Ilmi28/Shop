@@ -4,7 +4,7 @@
 @model Shop.ViewModels.SignUpViewModel
 @{
 }
-<h1>Sign Up</h1>
+<h1>Sign up</h1>
 <br />
 <form asp-action="SignUp" id="register-form">
     <div class="form-group">
@@ -15,7 +15,7 @@
     <br />
     <div class="form-group">
         <label asp-for=Email></label>
-        <input asp-for="Email" class="form-control" id="register-email-input"/>
+        <input asp-for="Email" type="text" class="form-control" id="register-email-input"/>
         <small id="register-email-error"></small>
     </div>
     <br />
@@ -23,6 +23,12 @@
         <label asp-for=Password></label>
         <input asp-for="Password" class="form-control" id="register-password-input" type="password"/>
         <small id="register-password-error"></small>
+    </div>
+    <br />
+    <div class="form-group">
+        <label>Re-type password</label>
+        <input class="form-control" id="register-password-retype-input" type="password"/>
+        <small id="register-password-retype-error"></small>
     </div>
     <br />
     <br />

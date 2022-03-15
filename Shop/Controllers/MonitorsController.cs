@@ -75,9 +75,9 @@ namespace Shop.Controllers
             string fileName = null;
             if (viewModel.MonitorPhoto != null)
             {
-                string imgPath = Path.Combine(_env.WebRootPath, "img");
+                string monitorimagesPath = Path.Combine(_env.WebRootPath, "img", "monitorImages");
                 fileName = Guid.NewGuid() + viewModel.MonitorPhoto.FileName;
-                string filePath = Path.Combine(imgPath, fileName);
+                string filePath = Path.Combine(monitorimagesPath, fileName);
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     viewModel.MonitorPhoto.CopyTo(fileStream);
@@ -89,6 +89,10 @@ namespace Shop.Controllers
         public IActionResult Delete(int id)
         {
             var monitor = _databaseService.GetMonitorById(id);
+            if(monitor == null)
+            {
+                return NotFound();
+            }
             MonitorViewModel monitorViewModel = new MonitorViewModel
             {
                 Name = monitor.Name
@@ -100,9 +104,9 @@ namespace Shop.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             var monitor = _databaseService.GetMonitorById(id.Value);
-            string oldFilePath = Path.Combine(_env.WebRootPath, "img", monitor.MonitorPhoto);
+            string oldFilePath = Path.Combine(_env.WebRootPath, "img", "monitorImages", monitor.MonitorPhoto);
             string defaultMonitorImage = _configuration["DefaultMonitorImage"];
-            string defaultFilePath = Path.Combine(_env.WebRootPath, "img", defaultMonitorImage);
+            string defaultFilePath = Path.Combine(_env.WebRootPath, "img", "monitorImages", defaultMonitorImage);
             if (System.IO.File.Exists(oldFilePath) && oldFilePath != defaultFilePath)
             {
                 System.IO.File.Delete(oldFilePath);
@@ -123,6 +127,7 @@ namespace Shop.Controllers
             }
             var monitorViewModel = new MonitorViewModel
             {
+                Id = monitor.Id,
                 Name = monitor.Name,
                 Price = monitor.Price,
                 Resolution = monitor.Resolution,
@@ -141,21 +146,21 @@ namespace Shop.Controllers
                 return View();
             }
             string defaultMonitorImage = _configuration["DefaultMonitorImage"];
-            string oldFilePath = Path.Combine(_env.WebRootPath, "img", monitor.MonitorPhoto);
-            string defaultFilePath = Path.Combine(_env.WebRootPath, "img", defaultMonitorImage);
+            string oldFilePath = Path.Combine(_env.WebRootPath, "img", "monitorImages", monitor.MonitorPhoto);
+            string defaultFilePath = Path.Combine(_env.WebRootPath, "img", "monitorImages", defaultMonitorImage);
             string fileName = UploadFile(viewModel);
 
-            if (System.IO.File.Exists(oldFilePath) && oldFilePath != defaultFilePath && viewModel.DefaultPhoto)
+            if (oldFilePath != defaultFilePath && (viewModel.DefaultPhoto || (!viewModel.DefaultPhoto && fileName != null)))
             {
                 System.IO.File.Delete(oldFilePath);
                 _logger.LogWarning("Photo with name {photoName} form path {photoPath}", monitor.MonitorPhoto, oldFilePath);
             }
-            if (fileName == null)
+            if (fileName == null && viewModel.DefaultPhoto)
             {
                 fileName = defaultMonitorImage;
                 _logger.LogInformation("Photo for monitor with name {monitorName} and id {monitorId} has been updated to default photo", monitor.Name, monitor.Id);
             }
-            if (!viewModel.DefaultPhoto && monitor.MonitorPhoto != defaultMonitorImage)
+            if (fileName == null && !viewModel.DefaultPhoto)
             {
                 fileName = monitor.MonitorPhoto;
             }
@@ -167,8 +172,13 @@ namespace Shop.Controllers
                 Resolution = viewModel.Resolution,
                 Refreshening = viewModel.Refreshening,
                 DefaultPhoto = viewModel.DefaultPhoto,
+                CategoryId = monitor.CategoryId,
                 MonitorPhoto = fileName
             };
+            if(monitorUpdated.MonitorPhoto == defaultMonitorImage)
+            {
+                monitorUpdated.DefaultPhoto = true;
+            }
             _context.Monitors.Remove(monitor);
             _context.Monitors.Add(monitorUpdated);
             _logger.LogInformation("Monitor with id {id} and name {name} has been updated!", monitor.Id, monitor.Name);

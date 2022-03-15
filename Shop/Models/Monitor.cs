@@ -15,7 +15,6 @@ namespace Shop.Models
         public string Resolution { get; set; }
         [Required]
         public string Refreshening { get; set; }
-        [Required]
         public Category? Category { get; set; }
         public int? CategoryId { get; set; }
         [Required]

@@ -68,10 +68,25 @@ function validateImage() {
     document.getElementById("photo-error").innerHTML = null;
     return true;
 }
+
 function minLengthCheck(field, errorField, minLength, x) {
     if (field.value.length < minLength) {
         x.preventDefault();
         errorField.innerHTML = "Minimum field's length is " + minLength;
+        field.classList.remove("is-valid");
+        field.classList.add("is-invalid");
+    }
+    else {
+        errorField.innerHTML = null;
+        field.classList.remove("is-invalid");
+        field.classList.add("is-valid");
+    }
+}
+
+function emailCheck(field, errorField, x) {
+    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(field.value)) {
+        x.preventDefault();
+        errorField.innerHTML = "Email adress is not valid";
         field.classList.remove("is-valid");
         field.classList.add("is-invalid");
     }

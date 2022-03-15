@@ -48,7 +48,7 @@ namespace Shop.Controllers
                     _logger.LogError("Cannot create user with name {name} and email {email}", user.Name, user.Email);
                 }
             }
-            return View(user);
+            return View();
         }
         public IActionResult SignIn()
         {
@@ -65,7 +65,12 @@ namespace Shop.Controllers
                     _logger.LogInformation("User with email {email} has logged in", user.Email);
                     return Redirect("/Home/Index");
                 }
+                ModelState.AddModelError(String.Empty, "Wrong email or password");
                 _logger.LogInformation("Logging in user {email} has failed", user.Email);
+            }
+            else
+            {
+                ModelState.AddModelError(String.Empty, "Please enter your email and password");
             }
             return View();
         }

@@ -15,7 +15,6 @@ namespace Shop.ViewModels
         [Display(Name = "Refresh rate")]
         [Required]
         public string Refreshening { get; set; }
-        [Required]
         public int? CategoryId { get; set; }
         public bool DefaultPhoto { get; set; } = true;
         public IFormFile? MonitorPhoto { get; set; }

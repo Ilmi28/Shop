@@ -326,6 +326,10 @@ body {
     background-color: white;
     border: solid black 1px;
 }
+.validation-summary-errors ul {
+    list-style: none;
+    margin-left: -24px
+}
 /* Dropdown Button */
 .dropdown-user-menu-btn {
     background-color: #212429;
