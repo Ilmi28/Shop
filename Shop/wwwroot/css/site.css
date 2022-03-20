@@ -64,9 +64,9 @@ body {
     display: block;
 }
 .item-block {
-    border: solid black 2px;
+    border: solid black 1px;
     border-radius: 10px;
-    height: 200px;
+    height: 195px;
     list-style: none;
     max-height: 400px;
 }
@@ -132,6 +132,14 @@ body {
     margin-top: -10px;
     margin-right: 10px;
     position: relative;
+}
+.cart-btn{
+    color: white;
+    font-size: 15px;
+    border-radius: 30px;
+    position: absolute;
+    top: 8px;
+    right: 190px;
 }
 #category-item-btn:hover{
     background-color: black;
@@ -343,6 +351,7 @@ body {
     position: absolute;
     right: 60px;
     display: inline-block;
+    margin-top: 5px;
 }
 /* Dropdown Content (Hidden by Default) */
 .dropdown-user-menu-content {
@@ -371,6 +380,79 @@ body {
 .show {
     display: block;
 }
+.cart-item-block{
+    border: solid black 1px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    height: 102px;
+    position: relative;
+    list-style: none;
+}
+.cart-item-img{
+    height: 100px;
+    border-radius: 10px;
+}
+.cart-item-photo-block{
+    width: 177px;
+    display: flex;
+    justify-content: center;
+}
+.cart-item-name{
+    position: absolute;
+    margin-top: -80px;
+    left: 250px;
+}
+.cart-item-price{
+    position: absolute;
+    right: 20%;
+}
+.cart-amount-bar li{
+    list-style: none;
+    display: inline;
+    margin-left: 10px;
+}
+.cart-amount-bar a{
+    text-decoration: none;    
+}
+.cart-amount-bar{
+    position: absolute;
+    right: 100px;
+    margin-top: -55px;
+}
+.cart-item-price{
+    right: 290px;
+    margin-top: -60px;
+    font-size: 18px;
+}
+.cart-delete-item-btn{
+    position: absolute;
+    margin-top: -60px;
+    right: 10px;
+    font-size: 15px;
+}
+.total-sum{
+    position: absolute;
+    right: 18%;
+}
+.cart-total-price{
+    position: absolute;
+    right: 240px;
+    top: 15px;
+    color: white;
+}
+.cart-items-amount{
+    background-color: red;
+    width: 20px;
+    color: white;
+    border-radius: 30px;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    right: 180px;
+    top: 8px;
+    z-index: 2;
+}
 @media (max-width: 575px){
     .sign-up-btn {
         position: relative;
@@ -381,6 +463,20 @@ body {
         position: relative;
         margin-left: 94px;
         top: 34px;
+    }
+    .dropdown-user-menu{
+        position: relative;
+        right: 0px;
+        margin-top: 10px;
+    }
+    .dropdown-user-menu-content{
+        background-color: #cbcbcb;
+    }
+    .cart-btn{
+        top: 8px;
+        position: absolute;
+        display: block;
+        right: 80px;
     }
 }
 @media (max-width: 768px) {

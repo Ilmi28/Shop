@@ -1,8 +1,13 @@
-﻿@*
+﻿@using Shop.Data
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@inject AppDbContext context
 @{
-    int counter = 1;
+    int counter = 0;
+    int amount = 0;
+    int max = 30;
+    int low = 0;
     ViewData["Title"] = "Monitors";
 }
 <div class="main-content">
@@ -26,32 +31,52 @@
                     <a class="monitors-see-more" asp-controller="Monitors" asp-action="Details" asp-route-id="@monitor.Id">See More</a>
                     <ul class="counter">
                         <li class="btn btn-dark minus" id="minus-@counter" onclick="decrease_@counter ()">-</li>
-                        <li class="btn"><input style="width: 30px" id="number-@counter" value="0" disabled/></li>
+                        <li class="btn"><input style="width: 30px" id="number-@counter" name="amount" value="0" disabled/></li>
                         <li class="btn btn-dark plus" id="plus-@counter" onclick="increase_@counter ()">+</li>  
                     </ul>
+                    @{
+                        int nativeId = monitor.Id;
+                        int productId = context.Products.FirstOrDefault(x => x.ProductNativeId == nativeId && x.ProductCategoryId == 1).Id;
+                    }
+                    <button class="btn btn-success monitors-add-to-cart-btn" id="add-to-cart-btn-@counter" onclick="redirect_@counter ()"><i class="bi bi-cart"></i>Add to cart</button>
                     <script>
-                        var minus = document.getElementById("minus-@counter");
+                        var minus_@counter = document.getElementById("minus-@counter");
                         var plus_@counter = document.getElementById("plus-@counter");
                         var number_@counter = document.getElementById("number-@counter");
                         var num_@counter = 0;
+                        var addToCartBtn_@counter = document.getElementById("add-to-cart-btn-@counter");
                         var max = 30;
                         var min = 0;
+                        minus_@counter .classList.add("disabled");
+                        addToCartBtn_@counter .classList.add("disabled");
                         function increase_@counter (){
                             if(num_@counter < max){
                                 num_@counter = num_@counter + 1;
-                                
+                                addToCartBtn_@counter .classList.remove("disabled");
+                                minus_@counter .classList.remove("disabled");
+                            }
+                            if(num_@counter == max){
+                                plus_@counter .classList.add("disabled");
                             }
                             number_@counter .value = num_@counter;                            
                         }
                         function decrease_@counter (){
                             if(num_@counter > min){
                                 num_@counter = num_@counter - 1;
-                                
+                                addToCartBtn_@counter .classList.remove("disabled");
+                                plus_@counter .classList.remove("disabled");
                             }
-                            number_@counter .value = num_@counter;                            
+                            if(num_@counter == min){
+                                addToCartBtn_@counter .classList.add("disabled");
+                                minus_@counter .classList.add("disabled");
+                            }
+                            number_@counter .value = num_@counter; 
                         }
-                    </script>
-                    <a class="btn btn-success monitors-add-to-cart-btn" ><i class="bi bi-cart"></i>Add to cart</a>
+                        function redirect_@counter (){                                                       
+                            location.replace("https://localhost:7238/Cart/AddToCart/" + @productId + "?amount=" + number_@counter .value)
+                        }                        
+                      
+                    </script> 
                     <a class="btn btn-warning item-edit-btn" asp-controller="Monitors" asp-action="Edit" asp-route-id="@monitor.Id">Edit</a>
                     <a class="btn btn-danger item-delete-btn" asp-controller="Monitors" asp-action="Delete" asp-route-id="@monitor.Id">Delete</a>
                 </div>

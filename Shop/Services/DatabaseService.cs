@@ -23,5 +23,19 @@ namespace Shop.Services
             var monitors = _context.Monitors.ToList();
             return monitors;
         }
+        public Models.Product GetProductMonitorByIdAndCategory(int id)
+        {
+            var product = _context.Products.Where(x => x.ProductNativeId == id && x.ProductCategoryId == 1).FirstOrDefault();
+            return product;
+        }
+        public Models.Product GetProduct(int id)
+        {
+            return _context.Products.FirstOrDefault(x => x.Id == id);
+        }
+        public Models.CartProduct GetCartProdut(int id)
+        {
+            return _context.CartProducts.FirstOrDefault(x => x.Id == id);
+        }
+        
     }
 }

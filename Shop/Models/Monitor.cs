@@ -15,8 +15,9 @@ namespace Shop.Models
         public string Resolution { get; set; }
         [Required]
         public string Refreshening { get; set; }
-        public Category? Category { get; set; }
-        public int? CategoryId { get; set; }
+        public Category Category { get; set; }
+        [Required]
+        public int CategoryId { get; set; }
         [Required]
         public bool DefaultPhoto { get; set; }
         [RegularExpression(@"/.*\.(gif|jpe?g|bmp|png)$/igm", ErrorMessage = "Only Image files allowed.")]

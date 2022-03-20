@@ -16,8 +16,8 @@ namespace Shop.Models
         public string GraphicCard { get; set; }
         [Required]
         public int RAM { get; set; }
-        public Category? Category { get; set; }
-        public int? CategoryId { get; set; }
+        public Category Category { get; set; }
+        public int CategoryId { get; set; }
 
     }
 }

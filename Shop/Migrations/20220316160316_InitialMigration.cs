@@ -23,17 +23,35 @@ namespace Shop.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductNativeId = table.Column<int>(type: "int", nullable: false),
+                    ProductPhoto = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProductPrice = table.Column<float>(type: "real", nullable: false),
+                    ProductCategoryId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Monitors",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<float>(type: "real", nullable: false),
                     Resolution = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Refreshening = table.Column<int>(type: "int", nullable: false),
-                    SerialNumber = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                    Refreshening = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    DefaultPhoto = table.Column<bool>(type: "bit", nullable: false),
+                    MonitorPhoto = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -53,11 +71,11 @@ namespace Shop.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<float>(type: "real", nullable: false),
                     Processor = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     GraphicCard = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RAM = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: true)
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -66,7 +84,8 @@ namespace Shop.Migrations
                         name: "FK_PCs_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -87,6 +106,9 @@ namespace Shop.Migrations
 
             migrationBuilder.DropTable(
                 name: "PCs");
+
+            migrationBuilder.DropTable(
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "Categories");

@@ -10,5 +10,7 @@ namespace Shop.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Shop.Models.Monitor> Monitors { get; set; }
         public DbSet<PC> PCs { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<CartProduct> CartProducts { get; set; }
     }
 }

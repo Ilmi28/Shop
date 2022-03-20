@@ -23,6 +23,7 @@ namespace Shop.Controllers
         }
         public IActionResult Index()
         {
+            Response.Cookies.Append("previousUrl", Request.Path);
             var monitors = _databaseService.GetMonitors();
             _logger.LogInformation("{amountOfMonitors} monitors have been displayed on page", monitors.Count);
             return View(monitors);
@@ -30,7 +31,6 @@ namespace Shop.Controllers
 
         public IActionResult Create()
         {
-            ViewBag.CategoryId = new SelectList(_context.Categories, "Id", "Name");
             return View();
         }
 
@@ -55,7 +55,7 @@ namespace Shop.Controllers
                 Price = viewModel.Price,
                 Resolution = viewModel.Resolution,
                 Refreshening = viewModel.Refreshening,
-                CategoryId = _context.Categories.FirstOrDefault(x => x.Name == "Monitors")?.Id,
+                CategoryId = _context.Categories.FirstOrDefault(x => x.Name == "Monitors").Id,
                 DefaultPhoto = viewModel.DefaultPhoto,
                 MonitorPhoto = photoFileName
             };
@@ -64,12 +64,22 @@ namespace Shop.Controllers
                 monitor.MonitorPhoto = defaultMonitorImage;
                 _logger.LogInformation("Default photo has been set for monitor with name {monitorName} and id {monitorId}", monitor.Name, monitor.Id);
             }
-            _context.Monitors.Add(monitor);
+            _context.Monitors.Add(monitor);            
+            await _context.SaveChangesAsync();
+            var product = new Models.Product
+            {
+                ProductNativeId = monitor.Id,
+                ProductName = monitor.Name,
+                ProductPhoto = monitor.MonitorPhoto,
+                ProductPrice = monitor.Price,
+                ProductCategoryId = monitor.CategoryId
+            };
+            _context.Products.Add(product);
             await _context.SaveChangesAsync();
             _logger.LogInformation("New monitor has been created with name {MonitorName} and id {monitorId}", monitor.Name, monitor.Id);
             return RedirectToAction("Index");
         }
-        //uploading photo file to wwwroot/img folder
+        //uploading photo file to wwwroot/img/monitorImages folder
         private string UploadFile(MonitorViewModel viewModel)
         {
             string fileName = null;
@@ -104,6 +114,7 @@ namespace Shop.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             var monitor = _databaseService.GetMonitorById(id.Value);
+            var product = _databaseService.GetProductMonitorByIdAndCategory(id.Value);
             string oldFilePath = Path.Combine(_env.WebRootPath, "img", "monitorImages", monitor.MonitorPhoto);
             string defaultMonitorImage = _configuration["DefaultMonitorImage"];
             string defaultFilePath = Path.Combine(_env.WebRootPath, "img", "monitorImages", defaultMonitorImage);
@@ -113,6 +124,7 @@ namespace Shop.Controllers
                 _logger.LogWarning("Photo with name {photoName} from path {path} has been deleted", monitor.MonitorPhoto, oldFilePath);
             }
             _context.Monitors.Remove(monitor);
+            _context.Products.Remove(product);
             await _context.SaveChangesAsync();
             _logger.LogInformation("Changes saved");
             _logger.LogWarning("Monitor with name {monitorName} and id {monitorId} has been deleted permanently", monitor.Name, monitor.Id);
@@ -141,6 +153,7 @@ namespace Shop.Controllers
         public async Task<IActionResult> Edit([Bind("Id,Name,Price,Resolution,Refreshening,MonitorPhoto,DefaultPhoto")] MonitorViewModel viewModel)
         {
             var monitor = _databaseService.GetMonitorById(viewModel.Id);
+            var product = _databaseService.GetProductMonitorByIdAndCategory(viewModel.Id);
             if (!ModelState.IsValid)
             {
                 return View();
@@ -179,8 +192,19 @@ namespace Shop.Controllers
             {
                 monitorUpdated.DefaultPhoto = true;
             }
+            var productUpdated = new Models.Product
+            {
+                Id = product.Id,
+                ProductNativeId = monitorUpdated.Id,
+                ProductName = monitorUpdated.Name,
+                ProductPhoto = monitorUpdated.MonitorPhoto,
+                ProductPrice = monitorUpdated.Price,
+                ProductCategoryId = monitorUpdated.CategoryId
+            };
             _context.Monitors.Remove(monitor);
+            _context.Products.Remove(product);
             _context.Monitors.Add(monitorUpdated);
+            _context.Products.Add(productUpdated);
             _logger.LogInformation("Monitor with id {id} and name {name} has been updated!", monitor.Id, monitor.Name);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");

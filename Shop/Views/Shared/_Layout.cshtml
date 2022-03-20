@@ -4,6 +4,18 @@
 @using Shop.Services
 @inject UserManager<AppUser> userManager
 @inject SignInManager<AppUser> signInManager
+@inject Shop.Data.AppDbContext context
+@inject IHttpContextAccessor _httpContextAccessor
+@{
+    string cartId = _httpContextAccessor.HttpContext.Request.Cookies["cartToken"];
+    float sum = 0;
+    var cartItems = context.CartProducts.Where(x => x.CartToken == cartId).ToList();
+    int amount = cartItems.Count;
+    foreach(var item in cartItems)
+    {
+        sum += item.Price * item.Quantity;
+    }
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,7 +55,7 @@
                         </li>
                         @if (signInManager.IsSignedIn(User))
                         {
-                            <li>
+                            <li class="nav-item">
                                 <div class="dropdown-user-menu">
                                     <button onclick="toggleFunc()" class="dropdown-user-menu-btn" id="user-name-button">@(User.FindFirst("Name")?.Value) ⮟</button>
                                     <div id="dropdown-user-content" class="dropdown-user-menu-content">
@@ -69,6 +81,11 @@
                 </div>
             </div>
         </nav>
+        @if(amount != 0){
+            <p class="cart-total-price">@(Math.Round(sum, 2))$</p>
+            <div class="cart-items-amount">@amount</div>
+        }
+        <a asp-controller="Cart" asp-action="Index"><button class="btn btn-success cart-btn"><i class="bi bi-cart4"></i></button></a>
     </header>
     <div class="container content">
         <main role="main" class="pb-3">
