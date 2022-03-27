@@ -3,16 +3,17 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @inject AppDbContext context
+@inject IHttpContextAccessor httpContextAccessor
 @{
+    string cartId = httpContextAccessor.HttpContext.Request.Cookies["cartToken"];
     int counter = 0;
-    int amount = 0;
-    int max = 30;
-    int low = 0;
     ViewData["Title"] = "Monitors";
 }
 <div class="main-content">
     <h2>Available products:</h2>
-    <a asp-action="AddProduct" asp-controller="Home" class="btn btn-dark add-product-btn">Add Product</a>
+    @if(User.Identity.IsAuthenticated){
+        <a asp-action="AddProduct" asp-controller="Home" class="btn btn-dark add-product-btn">Add Product</a>
+    }   
     <hr />
     <br />
     <br />
@@ -20,7 +21,7 @@
         {
             <h1>Nothing found here;(</h1>
         }
-    <ul>
+    <ul class="all-items">
         @foreach(var monitor in Model)
         {
             <li class="item-block">
@@ -37,6 +38,7 @@
                     @{
                         int nativeId = monitor.Id;
                         int productId = context.Products.FirstOrDefault(x => x.ProductNativeId == nativeId && x.ProductCategoryId == 1).Id;
+                        int? cartProductAmount = context.CartProducts.FirstOrDefault(x => x.ProductId == productId && x.CartToken == cartId)?.Quantity;
                     }
                     <button class="btn btn-success monitors-add-to-cart-btn" id="add-to-cart-btn-@counter" onclick="redirect_@counter ()"><i class="bi bi-cart"></i>Add to cart</button>
                     <script>
@@ -45,17 +47,17 @@
                         var number_@counter = document.getElementById("number-@counter");
                         var num_@counter = 0;
                         var addToCartBtn_@counter = document.getElementById("add-to-cart-btn-@counter");
-                        var max = 30;
+                        var max_@counter = 30 - @(cartProductAmount ?? 0);
                         var min = 0;
                         minus_@counter .classList.add("disabled");
                         addToCartBtn_@counter .classList.add("disabled");
                         function increase_@counter (){
-                            if(num_@counter < max){
+                            if(num_@counter < max_@counter){
                                 num_@counter = num_@counter + 1;
                                 addToCartBtn_@counter .classList.remove("disabled");
                                 minus_@counter .classList.remove("disabled");
                             }
-                            if(num_@counter == max){
+                            if(num_@counter == max_@counter){
                                 plus_@counter .classList.add("disabled");
                             }
                             number_@counter .value = num_@counter;                            
@@ -76,9 +78,15 @@
                             location.replace("https://localhost:7238/Cart/AddToCart/" + @productId + "?amount=" + number_@counter .value)
                         }                        
                       
-                    </script> 
-                    <a class="btn btn-warning item-edit-btn" asp-controller="Monitors" asp-action="Edit" asp-route-id="@monitor.Id">Edit</a>
-                    <a class="btn btn-danger item-delete-btn" asp-controller="Monitors" asp-action="Delete" asp-route-id="@monitor.Id">Delete</a>
+                    </script>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a class="btn btn-warning item-edit-btn" asp-controller="Monitors" asp-action="Edit" asp-route-id="@monitor.Id">Edit</a>
+                    }
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a class="btn btn-danger item-delete-btn" asp-controller="Monitors" asp-action="Delete" asp-route-id="@monitor.Id">Delete</a>
+                    }
                 </div>
             </li>
             <br />

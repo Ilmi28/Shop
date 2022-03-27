@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Shop.Data;
 using Shop.Services;
@@ -28,13 +29,14 @@ namespace Shop.Controllers
             _logger.LogInformation("{amountOfMonitors} monitors have been displayed on page", monitors.Count);
             return View(monitors);
         }
-
+        [Authorize]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("Id,Name,Price,Resolution,Refreshening,Category,CategoryId,MonitorPhoto,DefaultPhoto")] MonitorViewModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -80,6 +82,7 @@ namespace Shop.Controllers
             return RedirectToAction("Index");
         }
         //uploading photo file to wwwroot/img/monitorImages folder
+        [Authorize]
         private string UploadFile(MonitorViewModel viewModel)
         {
             string fileName = null;
@@ -96,6 +99,7 @@ namespace Shop.Controllers
             }
             return fileName;
         }
+        [Authorize]
         public IActionResult Delete(int id)
         {
             var monitor = _databaseService.GetMonitorById(id);
@@ -111,10 +115,13 @@ namespace Shop.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
+            string cartId = Request.Cookies["cartToken"];
             var monitor = _databaseService.GetMonitorById(id.Value);
             var product = _databaseService.GetProductMonitorByIdAndCategory(id.Value);
+            var cartProduct = _context.CartProducts.FirstOrDefault(x => x.CartToken == cartId && x.ProductId == product.Id);
             string oldFilePath = Path.Combine(_env.WebRootPath, "img", "monitorImages", monitor.MonitorPhoto);
             string defaultMonitorImage = _configuration["DefaultMonitorImage"];
             string defaultFilePath = Path.Combine(_env.WebRootPath, "img", "monitorImages", defaultMonitorImage);
@@ -125,11 +132,16 @@ namespace Shop.Controllers
             }
             _context.Monitors.Remove(monitor);
             _context.Products.Remove(product);
+            if (cartProduct != null)
+            {
+                _context.CartProducts.Remove(cartProduct);
+            }
             await _context.SaveChangesAsync();
             _logger.LogInformation("Changes saved");
             _logger.LogWarning("Monitor with name {monitorName} and id {monitorId} has been deleted permanently", monitor.Name, monitor.Id);
             return RedirectToAction("Index");
         }
+        [Authorize]
         public IActionResult Edit(int? id)
         {
             var monitor = _databaseService.GetMonitorById(id);
@@ -150,10 +162,13 @@ namespace Shop.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Edit([Bind("Id,Name,Price,Resolution,Refreshening,MonitorPhoto,DefaultPhoto")] MonitorViewModel viewModel)
         {
             var monitor = _databaseService.GetMonitorById(viewModel.Id);
             var product = _databaseService.GetProductMonitorByIdAndCategory(viewModel.Id);
+            string cartId = Request.Cookies["cartToken"];
+            var cartProducts = _context.CartProducts.Where(x => x.ProductId == product.Id).ToList();
             if (!ModelState.IsValid)
             {
                 return View();
@@ -205,6 +220,20 @@ namespace Shop.Controllers
             _context.Products.Remove(product);
             _context.Monitors.Add(monitorUpdated);
             _context.Products.Add(productUpdated);
+            foreach (var item in cartProducts)
+            {
+                var cartProductUpdated = new Models.CartProduct
+                {
+                    Name = productUpdated.ProductName,
+                    CartToken = item.CartToken,
+                    Quantity = item.Quantity,
+                    Photo = productUpdated.ProductPhoto,
+                    Price = productUpdated.ProductPrice,
+                    ProductId = item.ProductId
+                };
+                _context.CartProducts.Remove(item);
+                _context.CartProducts.Add(cartProductUpdated);
+            }
             _logger.LogInformation("Monitor with id {id} and name {name} has been updated!", monitor.Id, monitor.Name);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");

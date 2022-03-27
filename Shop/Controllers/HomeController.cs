@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Shop.Data;
 using Shop.Models;
 using System.Diagnostics;
@@ -9,11 +11,13 @@ namespace Shop.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly AppDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, AppDbContext context)
+        public HomeController(ILogger<HomeController> logger, AppDbContext context, UserManager<AppUser> userManager)
         {
             _logger = logger;
             _context = context;
+            _userManager = userManager;
         }
         public IActionResult Index()
         {
@@ -33,6 +37,7 @@ namespace Shop.Controllers
         {
             return View();
         }
+        [Authorize]
         public IActionResult AddProduct()
         {
             var category = _context.Categories;

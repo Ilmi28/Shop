@@ -1,0 +1,27 @@
+﻿@using System.Security.Claims
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model Shop.ViewModels.ChangeNameViewModel
+@inject Shop.Services.DatabaseService _databaseService
+@{
+    var userName = _databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier)).Name;
+    ViewData["Title"] = "Change username";
+}
+<h1>Change username</h1>
+<hr />
+<br />
+<br />
+<p style="font-size: 18px;"><b>Current username: </b> @userName</p>
+<br />
+<form asp-action="ChangeUsername" method="post" id="change-username-form">
+    <div class="form-group">
+        <label>New username</label>
+        <input asp-for="Name" class="form-control" id="change-username"/>
+        <small id="change-username-error"></small>
+    </div>
+    <br />
+    <input type="submit" class="btn btn-dark change-username-email-save-btn" value="Save"/>
+</form>
+<a asp-controller="Settings" asp-action="Index" ><input value="Cancel" type="button" class="btn btn-primary change-username-email-cancel-btn"/></a>
+<script src="~/js/changeUsernameValidation.js"></script>

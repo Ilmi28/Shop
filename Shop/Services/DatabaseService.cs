@@ -5,9 +5,11 @@ namespace Shop.Services
     public class DatabaseService
     {
         private readonly AppDbContext _context;
-        public DatabaseService(AppDbContext context)
+        private readonly AppIdentityDbContext _identityContext;
+        public DatabaseService(AppDbContext context, AppIdentityDbContext identityContext)
         {
             _context = context;
+            _identityContext = identityContext;
         }
         public Models.Monitor GetMonitorById(int? id)
         {
@@ -35,6 +37,10 @@ namespace Shop.Services
         public Models.CartProduct GetCartProdut(int id)
         {
             return _context.CartProducts.FirstOrDefault(x => x.Id == id);
+        }
+        public Models.AppUser GetUser(string id)
+        {
+            return _identityContext.Users.FirstOrDefault(x => x.Id == id);
         }
         
     }

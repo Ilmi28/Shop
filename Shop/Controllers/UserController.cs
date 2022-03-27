@@ -30,17 +30,25 @@ namespace Shop.Controllers
         {
             if (ModelState.IsValid)
             {
+                string cartId = Guid.NewGuid().ToString();
+                Response.Cookies.Append("cartToken", cartId);
                 AppUser appUser = new AppUser()
                 {
                     UserName = user.Email,
                     Name = user.Name,
                     Email = user.Email,
-                    PasswordHash = user.Password
+                    PasswordHash = user.Password,
+                    CartToken = cartId
                 };
                 IdentityResult result = await _userManager.CreateAsync(appUser, user.Password);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("Use with nam {name} and email {email} has been created", user.Name, user.Email);
+                    var res = await _signInManager.PasswordSignInAsync(user.Email, user.Password, false, false);
+                    if (!res.Succeeded)
+                    {
+                        _logger.LogError("User with id {id} cannot log in", appUser.Id);
+                    }
                     return Redirect("/Home/Index");
                 }
                 else
@@ -63,7 +71,7 @@ namespace Shop.Controllers
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User with email {email} has logged in", user.Email);
-                    return Redirect("/Home/Index");
+                    return RedirectToAction("SetCookie");
                 }
                 ModelState.AddModelError(String.Empty, "Wrong email or password");
                 _logger.LogInformation("Logging in user {email} has failed", user.Email);
@@ -77,6 +85,11 @@ namespace Shop.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+            return Redirect("/Home/Index");
+        }
+        public async Task<RedirectResult> SetCookie()
+        {
+            Response.Cookies.Append("cartToken", User.FindFirst("CartToken")?.Value);
             return Redirect("/Home/Index");
         }
     }

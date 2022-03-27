@@ -6,6 +6,8 @@
 @inject SignInManager<AppUser> signInManager
 @inject Shop.Data.AppDbContext context
 @inject IHttpContextAccessor _httpContextAccessor
+@inject Shop.Services.DatabaseService _databaseService
+@inject Shop.Data.AppIdentityDbContext _identityContext
 @{
     string cartId = _httpContextAccessor.HttpContext.Request.Cookies["cartToken"];
     float sum = 0;
@@ -15,6 +17,7 @@
     {
         sum += item.Price * item.Quantity;
     }
+    string userName = _databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier))?.Name;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -56,11 +59,12 @@
                         @if (signInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
-                                <div class="dropdown-user-menu">
-                                    <button onclick="toggleFunc()" class="dropdown-user-menu-btn" id="user-name-button">@(User.FindFirst("Name")?.Value) ⮟</button>
+                                <div class="dropdown-user-menu">             
+                                    <p onclick="toggleFunc()" class="dropdown-user-menu-btn" value="@userName" id="user-name-button" >@userName</p>  
                                     <div id="dropdown-user-content" class="dropdown-user-menu-content">
+                                        <a asp-controller="Settings" asp-action="Index">Settings</a>
                                         <a asp-controller="User" asp-action="Logout">Log out</a>
-                                  </div>
+                                    </div>
                                 </div>
                             </li>
                         }
@@ -81,21 +85,23 @@
                 </div>
             </div>
         </nav>
-        @if(amount != 0){
-            <p class="cart-total-price">@(Math.Round(sum, 2))$</p>
-            <div class="cart-items-amount">@amount</div>
-        }
-        <a asp-controller="Cart" asp-action="Index"><button class="btn btn-success cart-btn"><i class="bi bi-cart4"></i></button></a>
+        <div id="cart-bar">
+            @if(amount != 0){
+                <p class="cart-total-price">@(Math.Round(sum, 2))$</p>
+                <div class="cart-items-amount">@amount</div>
+            }
+            <a asp-controller="Cart" asp-action="Index"><button class="btn btn-success cart-btn"><i class="bi bi-cart4"></i></button></a>
+        </div>
     </header>
+
     <div class="container content">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
-
     <footer class="border-top footer text-light bg-dark">
         <div class="container">
-            &copy; 2022 - Shop - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy policy</a>
+            &copy; @DateTime.Now.Year - Shop - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy policy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
