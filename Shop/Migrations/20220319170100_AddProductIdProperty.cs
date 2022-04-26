@@ -12,7 +12,7 @@ namespace Shop.Migrations
                 name: "ProductId",
                 table: "CartProducts",
                 type: "int",
-                nullable: false,
+                nullable: true,
                 defaultValue: 0);
 
             migrationBuilder.CreateIndex(

@@ -1,12 +1,15 @@
 ﻿@using Shop.Data
+@using System.Security.Claims;
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @inject AppDbContext context
 @inject IHttpContextAccessor httpContextAccessor
+@inject Shop.Services.DatabaseService databaseService;
 @{
     string cartId = httpContextAccessor.HttpContext.Request.Cookies["cartToken"];
     int counter = 0;
+    var user = databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
     ViewData["Title"] = "Monitors";
 }
 <div class="main-content">
@@ -36,9 +39,9 @@
                         <li class="btn btn-dark plus" id="plus-@counter" onclick="increase_@counter ()">+</li>  
                     </ul>
                     @{
-                        int nativeId = monitor.Id;
-                        int productId = context.Products.FirstOrDefault(x => x.ProductNativeId == nativeId && x.ProductCategoryId == 1).Id;
-                        int? cartProductAmount = context.CartProducts.FirstOrDefault(x => x.ProductId == productId && x.CartToken == cartId)?.Quantity;
+                        int? nativeId = monitor.Id;
+                        int? productId = databaseService.GetProductMonitorByIdAndCategory(nativeId)?.Id;
+                        int? cartProductAmount = databaseService.GetCartProductByProductIdAndCartToken(productId, cartId)?.Quantity;
                     }
                     <button class="btn btn-success monitors-add-to-cart-btn" id="add-to-cart-btn-@counter" onclick="redirect_@counter ()"><i class="bi bi-cart"></i>Add to cart</button>
                     <script>
@@ -51,6 +54,10 @@
                         var min = 0;
                         minus_@counter .classList.add("disabled");
                         addToCartBtn_@counter .classList.add("disabled");
+                        if(max_@counter == 0){
+                            minus_@counter. classList.add("disabled");
+                            plus_@counter .classList.add("disabled");
+                        }
                         function increase_@counter (){
                             if(num_@counter < max_@counter){
                                 num_@counter = num_@counter + 1;
@@ -72,19 +79,19 @@
                                 addToCartBtn_@counter .classList.add("disabled");
                                 minus_@counter .classList.add("disabled");
                             }
-                            number_@counter .value = num_@counter; 
+                            number_@counter .value = num_@counter;
+                            
                         }
-                        function redirect_@counter (){                                                       
-                            location.replace("https://localhost:7238/Cart/AddToCart/" + @productId + "?amount=" + number_@counter .value)
+                        function redirect_@counter (){
+                            const url = window.location.href;
+                            let domain = new URL(url);
+                            location.replace(domain.origin + "/Cart/AddToCart/" + @productId + "?amount=" + number_@counter .value)
                         }                        
                       
                     </script>
-                    @if (User.Identity.IsAuthenticated)
+                    @if (User.Identity.IsAuthenticated && user.EmailConfirmed)
                     {
                         <a class="btn btn-warning item-edit-btn" asp-controller="Monitors" asp-action="Edit" asp-route-id="@monitor.Id">Edit</a>
-                    }
-                    @if (User.Identity.IsAuthenticated)
-                    {
                         <a class="btn btn-danger item-delete-btn" asp-controller="Monitors" asp-action="Delete" asp-route-id="@monitor.Id">Delete</a>
                     }
                 </div>

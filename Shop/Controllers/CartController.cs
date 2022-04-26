@@ -50,8 +50,11 @@ namespace Shop.Controllers
                 }                
             }
             _context.SaveChanges();
-            ViewBag.Id = cartId;
             string previousUrl = Request.Cookies["previousUrl"];
+            if(previousUrl == null)
+            {
+                return Redirect("/" + _context.Categories.FirstOrDefault(x => x.Id == product.ProductCategoryId).Name);
+            }
             return Redirect(previousUrl);
         }
         public RedirectResult Delete(int id)

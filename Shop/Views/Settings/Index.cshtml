@@ -1,18 +1,42 @@
 ﻿@using System.Security.Claims
+@inject Shop.Services.DatabaseService _databaseService
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
     string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+    var user = _databaseService.GetUser(userId);
+    bool emailConfirmed = user.EmailConfirmed;
 }
 <h1>Settings</h1>
 <hr />
 <br />
 <br />
-<div class="settings-buttons">
+<h5 class="settings-buttons">
     <a asp-controller="Settings" asp-action="ChangeUsername"><button class="btn btn-dark">Change username</button></a><br />
     <br />
     <a asp-controller="Settings" asp-action="ChangeEmail"><button class="btn btn-dark">Change email</button></a><br />
     <br />
     <a asp-controller="Settings" asp-action="ChangePassword"><button class="btn btn-dark">Change password</button></a><br />
+    <br />
+    <br />
+    <span style="font-size: 21px; font-weight: 600;">Pro status: </span>
+    @if (emailConfirmed)
+    {
+        <strong style="color: green; font-size: 21px;">active</strong>
+        <p style="color: lightgreen">Your email is confimed</p>
+    }
+    else
+    {
+        <strong style="color: red; font-size: 21px;">inactive</strong>
+        <br />
+        <p style="font-size: 13px; font-weight: 400;">Pro status gives you ability to post your own products</p>
+        <p style="font-size: 15px; font-weight: 400;">To gain pro status <a asp-controller="Settings" asp-action="SendEmailConfirmation" asp-route-userId="@userId" style="text-decoration: none; color: dodgerblue">confirm your email</a></p>
+    }
+    <br />
+    <h3 style="color: red;">Dangerous!</h3> 
+    <hr style="color: red;"/>
+    <br />
+    <br />
+    <a asp-controller="Settings" asp-action="DeleteAccount"><input class="btn btn-danger delete-account-btn" value="Delete account" type="button" /></a>
 </div>

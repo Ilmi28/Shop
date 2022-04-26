@@ -1,0 +1,13 @@
+﻿@using System.Security.Claims
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<h1 style="text-align: center;">This will permanently delete your account!</h1>
+<h1 style="text-align:center;">Are you sure about that?</h1>
+<div style="text-align:center; margin-top: 80px;">
+    <a asp-controller="Settings" asp-action="SendDeleteAccountEmail"><input type="button" onclick="showEmailMessage()" class="btn btn-danger user-delete-btn" value="Yes, I am sure"/></a>
+    <a asp-controller="Settings" asp-action="Index" ><input type="button" class="btn btn-primary user-delete-return-btn" value="No, return"/></a>
+</div>

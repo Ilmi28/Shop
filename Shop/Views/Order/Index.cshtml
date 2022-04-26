@@ -1,0 +1,76 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model Shop.ViewModels.OrderViewModel
+@inject Shop.Data.AppDbContext context
+@{
+    var deliveryMethods = context.DeliveryMethods;
+    var paymentMethods = context.PaymentMethods;
+}
+<h1>Order</h1>
+<hr />
+<br />
+<form asp-action="Index">
+    <div class="form-group">
+        <label asp-for="FirstName"></label>
+        <input asp-for="FirstName" class="form-control"/>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for="LastName"></label>
+        <input asp-for="LastName" class="form-control"/>
+    </div>
+    <br />
+    <div class="form-group">
+        <label>Country</label>
+        <input value="Poland" disabled class="form-control"/>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for="City"></label>
+        <input asp-for="City" class="form-control"/>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for="Address"></label>
+        <input asp-for="Address" class="form-control"/>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for="PostCode"></label>
+        <input asp-for="PostCode" class="form-control" placeholder="77-777"/>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control"/>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for="PhoneNumber"></label>
+        <input asp-for="PhoneNumber" class="form-control"/>
+    </div>
+    <br />
+    <h1>Delivery</h1>
+    <hr />
+    <br />
+    @foreach(var delivery in deliveryMethods)
+    {
+        <input type="radio" value="@delivery.Name" asp-for="DeliveryMethod" id="@delivery.Name"/>
+        <label for="@delivery.Name">@delivery.Name@("(up to " + delivery.DurationInHours + " hours)") @if (delivery.Price != 0) { @("- " + delivery.Price + "$") } else { @("- free") }</label><br />
+    }
+    <br />
+    <br />
+    <h1>Payment</h1>
+    <hr />
+    <br />
+    @foreach(var payment in paymentMethods)
+    {
+        <input type="radio" value="@payment.Name" asp-for="PaymentMethod" id="@payment.Name"/>
+        <label for="@payment.Name">@payment.Name @if (payment.Price != 0) { @("- " + payment.Price + "$") } else { @("- free") }</label><br />
+    }
+    <br />
+    <br />
+    <a asp-controller="Cart" asp-action="Index" ><input class="btn btn-dark order-back-btn" type="button" value="<< Back"/></a>
+    <input class="btn btn-dark go-to-delivery-btn" type="submit" value="Go to payment >>"/>
+</form>

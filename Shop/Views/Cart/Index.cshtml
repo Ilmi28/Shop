@@ -52,6 +52,7 @@ else{
                 counter++;
             }
         </ul>
-        <h4 class="total-sum">Total : @(Math.Round(sum, 2))$</h4>
+        <h4 class="total-sum">Total: @(Math.Round(sum, 2))$</h4>
+        <a asp-controller="Order" asp-action="Index"><input type="button" class="btn btn-dark go-to-order-btn" value="Go to order >>"/></a>
     </div>
 }

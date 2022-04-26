@@ -26,6 +26,7 @@ form.addEventListener('submit', (x) => {
         emailCheck(USER_EMAIL, USER_EMAIL_ERROR, x);
     }
     if (USER_PASSWORD_RETYPE.value != "" && USER_PASSWORD.value != USER_PASSWORD_RETYPE.value) {
+        x.preventDefault();
         USER_PASSWORD_RETYPE_ERROR.innerHTML = "Password is not match";
         USER_PASSWORD_RETYPE.classList.remove("is-valid");
         USER_PASSWORD_RETYPE.classList.add("is-invalid");

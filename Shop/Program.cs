@@ -3,6 +3,8 @@ using Shop.Data;
 using Shop.Services;
 using Shop.Models;
 using Microsoft.AspNetCore.Identity;
+using Shop.Options;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +22,15 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequiredUniqueChars = 0;
 });
+builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection("Mailkit"));
+builder.Services.Configure<CipherOptions>(builder.Configuration.GetSection("Cryptography"));
+builder.Services.AddTransient<IEmailSender, EmailService>();
+builder.Services.AddScoped<CryptographyService>();
 builder.Services.AddScoped<DatabaseService>();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ProStatusOnly", policy => policy.RequireClaim("EmailConfirmed", "True"));
+});
 builder.Services.AddMemoryCache();
 builder.Services.AddSession();
 builder.Services.AddControllersWithViews();

@@ -24,7 +24,6 @@ window.onclick = function (event) {
         }
     }
 }
-
 function emptyFieldCheck(field, errorField, x) {
     if (field.value === "" || field.value == null) {
         x.preventDefault();

@@ -30,6 +30,7 @@ namespace Shop.Controllers
             return View(monitors);
         }
         [Authorize]
+        [Authorize(Policy = "ProStatusOnly")]
         public IActionResult Create()
         {
             return View();
@@ -37,6 +38,7 @@ namespace Shop.Controllers
 
         [HttpPost]
         [Authorize]
+        [Authorize(Policy = "ProStatusOnly")]
         public async Task<IActionResult> Create([Bind("Id,Name,Price,Resolution,Refreshening,Category,CategoryId,MonitorPhoto,DefaultPhoto")] MonitorViewModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -59,14 +61,14 @@ namespace Shop.Controllers
                 Refreshening = viewModel.Refreshening,
                 CategoryId = _context.Categories.FirstOrDefault(x => x.Name == "Monitors").Id,
                 DefaultPhoto = viewModel.DefaultPhoto,
-                MonitorPhoto = photoFileName
+                MonitorPhoto = photoFileName,
             };
             if (monitor.DefaultPhoto == true)
             {
                 monitor.MonitorPhoto = defaultMonitorImage;
                 _logger.LogInformation("Default photo has been set for monitor with name {monitorName} and id {monitorId}", monitor.Name, monitor.Id);
             }
-            _context.Monitors.Add(monitor);            
+            _context.Monitors.Add(monitor);
             await _context.SaveChangesAsync();
             var product = new Models.Product
             {
@@ -83,6 +85,7 @@ namespace Shop.Controllers
         }
         //uploading photo file to wwwroot/img/monitorImages folder
         [Authorize]
+        [Authorize(Policy = "ProStatusOnly")]
         private string UploadFile(MonitorViewModel viewModel)
         {
             string fileName = null;
@@ -100,6 +103,7 @@ namespace Shop.Controllers
             return fileName;
         }
         [Authorize]
+        [Authorize(Policy = "ProStatusOnly")]
         public IActionResult Delete(int id)
         {
             var monitor = _databaseService.GetMonitorById(id);
@@ -116,6 +120,7 @@ namespace Shop.Controllers
 
         [HttpPost]
         [Authorize]
+        [Authorize(Policy = "ProStatusOnly")]
         public async Task<IActionResult> Delete(int? id)
         {
             string cartId = Request.Cookies["cartToken"];
@@ -142,6 +147,7 @@ namespace Shop.Controllers
             return RedirectToAction("Index");
         }
         [Authorize]
+        [Authorize(Policy = "ProStatusOnly")]
         public IActionResult Edit(int? id)
         {
             var monitor = _databaseService.GetMonitorById(id);
@@ -163,6 +169,7 @@ namespace Shop.Controllers
 
         [HttpPost]
         [Authorize]
+        [Authorize(Policy = "ProStatusOnly")]
         public async Task<IActionResult> Edit([Bind("Id,Name,Price,Resolution,Refreshening,MonitorPhoto,DefaultPhoto")] MonitorViewModel viewModel)
         {
             var monitor = _databaseService.GetMonitorById(viewModel.Id);
@@ -240,6 +247,7 @@ namespace Shop.Controllers
         }
         public IActionResult Details(int? id)
         {
+            Response.Cookies.Append("previousUrl", Request.Path);
             var monitor = _databaseService.GetMonitorById(id);
             return View(monitor);
         }

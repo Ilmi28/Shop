@@ -25,7 +25,7 @@ namespace Shop.Services
             var monitors = _context.Monitors.ToList();
             return monitors;
         }
-        public Models.Product GetProductMonitorByIdAndCategory(int id)
+        public Models.Product GetProductMonitorByIdAndCategory(int? id)
         {
             var product = _context.Products.Where(x => x.ProductNativeId == id && x.ProductCategoryId == 1).FirstOrDefault();
             return product;
@@ -40,7 +40,16 @@ namespace Shop.Services
         }
         public Models.AppUser GetUser(string id)
         {
-            return _identityContext.Users.FirstOrDefault(x => x.Id == id);
+            var user = _identityContext.Users.FirstOrDefault(x => x.Id == id);
+            return user;
+        }
+        public Models.CartProduct GetCartProductByProductIdAndCartToken(int? id, string? token)
+        {
+            return _context.CartProducts.FirstOrDefault(x => x.ProductId == id && x.CartToken == token);
+        }
+        public List<Models.CartProduct> GetUserCartProducts(string token)
+        {
+            return _context.CartProducts.Where(x => x.CartToken == token).ToList();
         }
         
     }
