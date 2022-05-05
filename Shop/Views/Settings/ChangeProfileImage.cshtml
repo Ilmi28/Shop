@@ -1,0 +1,24 @@
+﻿@using System.Security.Claims
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model Shop.ViewModels.UserViewModel
+@inject Shop.Services.DatabaseService _databaseService;
+@{
+    var user = _databaseService.GetUser(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+}
+<h1>Change profile image</h1>
+<hr />
+<br />
+<img src="~/img/userImages/@user.UserPhoto" id="change-photo-preview"/>
+<br />
+<br />
+<form asp-action="ChangeProfileImage" enctype="multipart/form-data" id="change-user-photo-form" onchange="validateImage('change-user-photo', 'change-user-photo-error')">
+    <div class="form-group">
+        <input type="file" asp-for="@Model.UserPhoto" class="form-control" id="change-user-photo"/>
+        <small id="change-user-photo-error"></small>
+    </div>
+    <br />
+    <input class="btn btn-dark change-user-photo-submit" type="submit" value="Save"/>
+    <a asp-controller="Settings" asp-action="Index"><input type="button" class="btn btn-primary change-user-photo-cancel" value="Cancel"/></a>
+</form>

@@ -1,0 +1,39 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using System.Security.Claims;
+@inject Shop.Data.AppDbContext context
+@inject IConfiguration config
+@{
+    var products = context.Products.Where(x => x.Creator == User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
+}
+<h1>My Profile</h1>
+<hr />
+<br />
+<div style="width: 300px;"><a asp-controller="Settings" asp-action="ChangeProfileImage" style="text-decoration: none;">
+    <img src="~/img/userImages/@Model.UserPhoto" class="user-photo-profile"/>
+    <div class="photo-profile-darker"><div>Change photo</div></div>
+</a></div>
+<h3 class="user-name-profile">@Model.Name</h3><br />
+<span class="user-email-profile">@Model.Email</span>
+<a asp-controller="Settings" asp-action="Index"><input type="button" value="Go to settings" class="btn btn-dark go-to-settings-btn"/></a>
+<br />
+<br />
+<br />
+<br />
+<h2>My products</h2>
+<hr />
+@for(int i = 0; i < products.Count; i++){
+    
+    string? category = context.Categories.FirstOrDefault(x => x.Id == products[i].ProductCategoryId)?.Name;
+    <div class="my-product-block">
+        <div class="my-product-photo-block"><img src="~/img/monitorImages/@products[i].ProductPhoto" class="my-product-photo"/></div>
+        <span class="my-product-name"><strong>@products[i].ProductName</strong><span class="text-muted my-product-category"> - @category</span></span>
+        <p class="my-product-price">Price: @(products[i].ProductPrice)$</p>
+        <a asp-controller="@category" asp-action="Details" asp-route-id="@products[i].ProductNativeId" class="my-product-see-more">See more</a>
+        <div class="my-product-buttons">
+            <a asp-controller="@category" asp-action="Edit" asp-route-id="@products[i].ProductNativeId"><input type="button" class="btn btn-warning my-product-edit-btn" value="Edit"/></a>
+            <a asp-controller="@category" asp-action="Delete" asp-route-id="@products[i].ProductNativeId"><input value="Delete" class="btn btn-danger my-product-delete-btn" type="button"/></a>
+        </div>
+    </div>
+}
