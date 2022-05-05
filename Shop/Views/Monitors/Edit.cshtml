@@ -43,7 +43,7 @@
     <br />
     <div class="form-group">
         <div class="form-check">
-            <input type="checkbox" class="form-check-input" asp-for="DefaultPhoto" id="monitor-checkbox" onclick="setDefaultPhoto()" />
+            <input type="checkbox" class="form-check-input" asp-for="DefaultPhoto" id="monitor-checkbox" onclick="setDefaultPhoto('upload-monitor-photo', this.id)" />
             <label class="form-check-label" asp-for="DefaultPhoto">Set default photo</label>
         </div>
     </div>
@@ -52,10 +52,10 @@
         <label asp-for="MonitorPhoto"></label>
         @if (!Model.DefaultPhoto)
         {
-            <input asp-for="MonitorPhoto" class="form-control" id="upload-photo" onchange="validateImage()"/>
+            <input asp-for="MonitorPhoto" class="form-control" id="upload-monitor-photo" onchange="validateImage(this.id, 'photo-error')"/>
         }
         else{
-            <input asp-for="MonitorPhoto" class="form-control" id="upload-photo" onchange="validateImage()" disabled/>
+            <input asp-for="MonitorPhoto" class="form-control" id="upload-monitor-photo" disabled onchange="validateImage(this.id, 'photo-error')"/>
         }
         <small id="photo-error"></small>
     </div>

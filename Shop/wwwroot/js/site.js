@@ -13,7 +13,7 @@ function toggleFunc() {
 
 // Close the dropdown menu if the user clicks outside of it
 window.onclick = function (event) {
-    if (!event.target.matches('.dropdown-user-menu-btn')) {
+    if (!event.target.matches('.dropdown-user-menu-btn') && !event.target.matches('#user-photo-navbar')) {
         var dropdowns = document.getElementsByClassName("dropdown-user-menu-content");
         var i;
         for (i = 0; i < dropdowns.length; i++) {
@@ -37,6 +37,12 @@ function emptyFieldCheck(field, errorField, x) {
         field.classList.add("is-valid");
     }
 }
+function emptyFileInputCheck(fileInput, errorField, x) {
+    if (fileInput.files.length == 0) {
+        x.preventDefault();
+        errorField.innerHTML = "You must upload file";
+    }
+}
 function HeaderFixedPos() {
     if (window.pageYOffset > sticky) {
         header.classList.add("sticky");
@@ -45,9 +51,9 @@ function HeaderFixedPos() {
         header.classList.remove("sticky");
     }
 }
-function setDefaultPhoto() {
-    var checkbox = document.getElementById("monitor-checkbox");
-    var photoChange = document.getElementById("upload-photo");
+function setDefaultPhoto(inputId, checkboxId) {
+    var checkbox = document.getElementById(checkboxId);
+    var photoChange = document.getElementById(inputId);
     if (checkbox.checked) {
         photoChange.disabled = true;
     }
@@ -56,11 +62,11 @@ function setDefaultPhoto() {
     }
 }
 
-function validateImage() {
-    var file = document.getElementById("upload-photo");
+function validateImage(inputId, errorId) {
+    var file = document.getElementById(inputId);
     var ext = file.value.split('.').pop().toLowerCase();
     if (ext != "jpg" && ext != "png") {
-        document.getElementById("photo-error").innerHTML = "Invalid file extension. Only png and jpg files are allowed"
+        document.getElementById(errorId).innerHTML = "Invalid file extension. Only png and jpg files are allowed"
         file.value = '';
         return false;
     }
@@ -82,6 +88,18 @@ function minLengthCheck(field, errorField, minLength, x) {
     }
 }
 
+function maxLengthCheck(field, errorField, maxLength, x) {
+    if (field.value.length > maxLength) {
+        x.preventDefault();
+        errorField.innerHTML = "Maximum field's length is " + maxLength;
+        field.classList.add("is-invalid");
+    }
+    else {
+        errorField.innerHTML = null;
+        field.classList.remove("is-invalid");
+    }
+}
+
 function emailCheck(field, errorField, x) {
     if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(field.value)) {
         x.preventDefault();
@@ -95,3 +113,21 @@ function emailCheck(field, errorField, x) {
         field.classList.add("is-valid");
     }
 }
+const USER_IMAGE_INPUT = document.getElementById("change-user-photo");
+const CHANGE_PHOTO_PREVIEW = document.getElementById("change-photo-preview");
+USER_IMAGE_INPUT.onchange = evt => {
+    const [file] = USER_IMAGE_INPUT.files;
+    if (file) {
+        CHANGE_PHOTO_PREVIEW.src = URL.createObjectURL(file);
+    }
+    if (CHANGE_PHOTO_PREVIEW.src == "") {
+
+    }
+}
+
+const CHANGE_USER_PHOTO = document.getElementById("change-user-photo");
+const CHANGE_USER_PHOTO_ERROR = document.getElementById("change-user-photo-error");
+var changeUserImageForm = document.getElementById("change-user-photo-form");
+changeUserImageForm.addEventListener('submit', (x) => {
+    emptyFileInputCheck(CHANGE_USER_PHOTO, CHANGE_USER_PHOTO_ERROR, x);
+});

@@ -2,6 +2,7 @@
 using Shop.Data;
 using Shop.Models;
 using Shop.Services;
+using System.Security.Claims;
 
 namespace Shop.Controllers
 {
@@ -26,6 +27,10 @@ namespace Shop.Controllers
         public RedirectResult AddToCart(int id, int amount)
         {
             var product = _context.Products.FirstOrDefault(x => x.Id == id);
+            if(User.Identity.IsAuthenticated && product?.Creator == User.FindFirst(ClaimTypes.NameIdentifier)?.Value)
+            {
+                return Redirect("/User/AccessDenied");
+            }
             string cartId = Request.Cookies["cartToken"] ?? Guid.NewGuid().ToString();
             CookieOptions options = new CookieOptions();
             options.Expires = DateTime.Now.AddDays(7);

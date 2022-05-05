@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Shop.Data;
 using Shop.Services;
 using Shop.ViewModels;
+using System.Security.Claims;
 
 namespace Shop.Controllers
 {
@@ -14,13 +15,16 @@ namespace Shop.Controllers
         private readonly DatabaseService _databaseService;
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _configuration;
-        public MonitorsController(AppDbContext context, ILogger<MonitorsController> logger, DatabaseService databaseService, IWebHostEnvironment env, IConfiguration configuration)
+        private readonly IAuthorizationService _authService;
+        public MonitorsController(AppDbContext context, ILogger<MonitorsController> logger, DatabaseService databaseService, IWebHostEnvironment env, IConfiguration configuration
+            , IAuthorizationService authService)
         {
             _context = context;
             _logger = logger;
             _databaseService = databaseService;
             _env = env;
             _configuration = configuration;
+            _authService = authService; 
         }
         public IActionResult Index()
         {
@@ -29,16 +33,14 @@ namespace Shop.Controllers
             _logger.LogInformation("{amountOfMonitors} monitors have been displayed on page", monitors.Count);
             return View(monitors);
         }
-        [Authorize]
-        [Authorize(Policy = "ProStatusOnly")]
+        [Authorize("ProStatusOnly")]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
-        [Authorize]
-        [Authorize(Policy = "ProStatusOnly")]
+        [Authorize("ProStatusOnly")]
         public async Task<IActionResult> Create([Bind("Id,Name,Price,Resolution,Refreshening,Category,CategoryId,MonitorPhoto,DefaultPhoto")] MonitorViewModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -48,11 +50,14 @@ namespace Shop.Controllers
             //You can change default photo name in the appsettings.json file
             //After changing photo name in config file you should also upload your own photo file with name which should be the same as in the config
             string defaultMonitorImage = _configuration["DefaultMonitorImage"];
-            string photoFileName = UploadFile(viewModel);
+            string folderPath = Path.Combine(_env.WebRootPath, "img", "monitorImages");
+            string? fileName = viewModel.MonitorPhoto?.FileName;
+            string photoFileName = _databaseService.UploadFile(viewModel.MonitorPhoto, folderPath, fileName);
             if (photoFileName == null)
             {
                 photoFileName = defaultMonitorImage;
             }
+            var user = _databaseService.GetUser(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var monitor = new Models.Monitor
             {
                 Name = viewModel.Name,
@@ -62,6 +67,7 @@ namespace Shop.Controllers
                 CategoryId = _context.Categories.FirstOrDefault(x => x.Name == "Monitors").Id,
                 DefaultPhoto = viewModel.DefaultPhoto,
                 MonitorPhoto = photoFileName,
+                Creator = user.Id
             };
             if (monitor.DefaultPhoto == true)
             {
@@ -76,37 +82,24 @@ namespace Shop.Controllers
                 ProductName = monitor.Name,
                 ProductPhoto = monitor.MonitorPhoto,
                 ProductPrice = monitor.Price,
-                ProductCategoryId = monitor.CategoryId
+                ProductCategoryId = monitor.CategoryId,
+                Creator = monitor.Creator
             };
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
             _logger.LogInformation("New monitor has been created with name {MonitorName} and id {monitorId}", monitor.Name, monitor.Id);
             return RedirectToAction("Index");
         }
-        //uploading photo file to wwwroot/img/monitorImages folder
-        [Authorize]
-        [Authorize(Policy = "ProStatusOnly")]
-        private string UploadFile(MonitorViewModel viewModel)
-        {
-            string fileName = null;
-            if (viewModel.MonitorPhoto != null)
-            {
-                string monitorimagesPath = Path.Combine(_env.WebRootPath, "img", "monitorImages");
-                fileName = Guid.NewGuid() + viewModel.MonitorPhoto.FileName;
-                string filePath = Path.Combine(monitorimagesPath, fileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    viewModel.MonitorPhoto.CopyTo(fileStream);
-                    _logger.LogInformation("New photo file has been created with name {photoName} and path {path}", fileName, filePath);
-                }
-            }
-            return fileName;
-        }
-        [Authorize]
-        [Authorize(Policy = "ProStatusOnly")]
-        public IActionResult Delete(int id)
+        [Authorize("ProStatusOnly")]
+        public async Task<IActionResult> Delete(int id)
         {
             var monitor = _databaseService.GetMonitorById(id);
+            var product = _databaseService.GetProductMonitorByIdAndCategory(id);
+            var isProductOwner = await _authService.AuthorizeAsync(User, product, "ProductOwnerOnly");
+            if (!isProductOwner.Succeeded)
+            {
+                return Redirect("/User/AccessDenied");
+            }
             if(monitor == null)
             {
                 return NotFound();
@@ -119,13 +112,17 @@ namespace Shop.Controllers
         }
 
         [HttpPost]
-        [Authorize]
-        [Authorize(Policy = "ProStatusOnly")]
+        [Authorize("ProStatusOnly")]
         public async Task<IActionResult> Delete(int? id)
         {
-            string cartId = Request.Cookies["cartToken"];
+            string? cartId = Request.Cookies["cartToken"];
             var monitor = _databaseService.GetMonitorById(id.Value);
             var product = _databaseService.GetProductMonitorByIdAndCategory(id.Value);
+            var isProductOwner = await _authService.AuthorizeAsync(User, product, "ProductOwnerOnly");
+            if (!isProductOwner.Succeeded)
+            {
+                return Redirect("/User/AccessDenied");
+            }
             var cartProduct = _context.CartProducts.FirstOrDefault(x => x.CartToken == cartId && x.ProductId == product.Id);
             string oldFilePath = Path.Combine(_env.WebRootPath, "img", "monitorImages", monitor.MonitorPhoto);
             string defaultMonitorImage = _configuration["DefaultMonitorImage"];
@@ -146,11 +143,16 @@ namespace Shop.Controllers
             _logger.LogWarning("Monitor with name {monitorName} and id {monitorId} has been deleted permanently", monitor.Name, monitor.Id);
             return RedirectToAction("Index");
         }
-        [Authorize]
-        [Authorize(Policy = "ProStatusOnly")]
-        public IActionResult Edit(int? id)
+        [Authorize("ProStatusOnly")]
+        public async Task<IActionResult> Edit(int? id)
         {
             var monitor = _databaseService.GetMonitorById(id);
+            var product = _databaseService.GetProductMonitorByIdAndCategory(id.Value);
+            var isProductOwner = await _authService.AuthorizeAsync(User, product, "ProductOwnerOnly");
+            if (!isProductOwner.Succeeded)
+            {
+                return Redirect("/User/AccessDenied");
+            }
             if (monitor == null)
             {
                 return NotFound();
@@ -168,13 +170,17 @@ namespace Shop.Controllers
         }
 
         [HttpPost]
-        [Authorize]
-        [Authorize(Policy = "ProStatusOnly")]
+        [Authorize("ProStatusOnly")]
         public async Task<IActionResult> Edit([Bind("Id,Name,Price,Resolution,Refreshening,MonitorPhoto,DefaultPhoto")] MonitorViewModel viewModel)
         {
             var monitor = _databaseService.GetMonitorById(viewModel.Id);
             var product = _databaseService.GetProductMonitorByIdAndCategory(viewModel.Id);
-            string cartId = Request.Cookies["cartToken"];
+            var isProductOwner = await _authService.AuthorizeAsync(User, product, "ProductOwnerOnly");
+            if (!isProductOwner.Succeeded)
+            {
+                return Redirect("/User/AccessDenied");
+            }
+            string? cartId = Request.Cookies["cartToken"];
             var cartProducts = _context.CartProducts.Where(x => x.ProductId == product.Id).ToList();
             if (!ModelState.IsValid)
             {
@@ -182,22 +188,24 @@ namespace Shop.Controllers
             }
             string defaultMonitorImage = _configuration["DefaultMonitorImage"];
             string oldFilePath = Path.Combine(_env.WebRootPath, "img", "monitorImages", monitor.MonitorPhoto);
+            string newFilePath = Path.Combine(_env.WebRootPath, "img", "monitorImages");
+            string? fileName = viewModel.MonitorPhoto?.FileName;
             string defaultFilePath = Path.Combine(_env.WebRootPath, "img", "monitorImages", defaultMonitorImage);
-            string fileName = UploadFile(viewModel);
+            string? photoFileName = _databaseService.UploadFile(viewModel.MonitorPhoto, newFilePath, fileName);
 
             if (oldFilePath != defaultFilePath && (viewModel.DefaultPhoto || (!viewModel.DefaultPhoto && fileName != null)))
             {
                 System.IO.File.Delete(oldFilePath);
                 _logger.LogWarning("Photo with name {photoName} form path {photoPath}", monitor.MonitorPhoto, oldFilePath);
             }
-            if (fileName == null && viewModel.DefaultPhoto)
+            if (photoFileName == null && viewModel.DefaultPhoto)
             {
-                fileName = defaultMonitorImage;
+                photoFileName = defaultMonitorImage;
                 _logger.LogInformation("Photo for monitor with name {monitorName} and id {monitorId} has been updated to default photo", monitor.Name, monitor.Id);
             }
-            if (fileName == null && !viewModel.DefaultPhoto)
+            if (photoFileName == null && !viewModel.DefaultPhoto)
             {
-                fileName = monitor.MonitorPhoto;
+                photoFileName = monitor.MonitorPhoto;
             }
             var monitorUpdated = new Models.Monitor
             {
@@ -208,7 +216,8 @@ namespace Shop.Controllers
                 Refreshening = viewModel.Refreshening,
                 DefaultPhoto = viewModel.DefaultPhoto,
                 CategoryId = monitor.CategoryId,
-                MonitorPhoto = fileName
+                MonitorPhoto = photoFileName,
+                Creator = monitor.Creator
             };
             if(monitorUpdated.MonitorPhoto == defaultMonitorImage)
             {
@@ -221,7 +230,8 @@ namespace Shop.Controllers
                 ProductName = monitorUpdated.Name,
                 ProductPhoto = monitorUpdated.MonitorPhoto,
                 ProductPrice = monitorUpdated.Price,
-                ProductCategoryId = monitorUpdated.CategoryId
+                ProductCategoryId = monitorUpdated.CategoryId,
+                Creator = monitor.Creator
             };
             _context.Monitors.Remove(monitor);
             _context.Products.Remove(product);

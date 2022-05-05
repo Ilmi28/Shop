@@ -26,7 +26,7 @@ namespace Shop.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Create([Bind("Name, Price, Processor, GraphicCard, RAM")] PC model)
+        public IActionResult Create([Bind("Name, Price, Processor, GraphicCard, RAM")] PC model)
         {
             if (!ModelState.IsValid)
             {

@@ -5,6 +5,9 @@ using Shop.Models;
 using Microsoft.AspNetCore.Identity;
 using Shop.Options;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Authorization;
+using Shop.RequirementsHandlers;
+using Shop.Requirements;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,9 +30,15 @@ builder.Services.Configure<CipherOptions>(builder.Configuration.GetSection("Cryp
 builder.Services.AddTransient<IEmailSender, EmailService>();
 builder.Services.AddScoped<CryptographyService>();
 builder.Services.AddScoped<DatabaseService>();
+builder.Services.AddScoped<IAuthorizationHandler, ProductOwnerRequirementHandler>();
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("ProStatusOnly", policy => policy.RequireClaim("EmailConfirmed", "True"));
+    options.AddPolicy("ProStatusOnly", policy => policy.RequireClaim("HasProStatus", "True"));
+    options.AddPolicy("ProductOwnerOnly", policy => policy.AddRequirements(new ProductOwnerRequirement()));
+});
+builder.Services.ConfigureApplicationCookie(options => {
+    options.LoginPath = "/User/SignIn";
+    options.AccessDeniedPath = "/User/AccessDenied";
 });
 builder.Services.AddMemoryCache();
 builder.Services.AddSession();

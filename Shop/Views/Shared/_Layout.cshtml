@@ -17,9 +17,10 @@
     {
         sum += item.Price * item.Quantity;
     }
-    var user = _databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
-    string userName = user.Name;
-    bool emailConfimed = user.EmailConfirmed;
+    string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var user = _databaseService.GetUser(userId);
+    string? userName = user?.Name;
+    bool? emailConfimed = user?.EmailConfirmed;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -61,10 +62,11 @@
                         @if (signInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
+                                <img src="~/img/userImages/@user.UserPhoto" id="user-photo-navbar" onclick="toggleFunc()">
                                 <div class="dropdown-user-menu">             
                                     <p onclick="toggleFunc()" class="dropdown-user-menu-btn" value="@userName" id="user-name-button" >@userName</p>  
                                     <div id="dropdown-user-content" class="dropdown-user-menu-content">
-                                        <div class="status-block">Pro status @if (emailConfimed)
+                                        <div class="status-block">Pro status @if (emailConfimed == true)
                                             {
                                                 <strong style="color: green" class="status">active</strong>
                                             }
@@ -73,7 +75,7 @@
                                                 <strong style="color: red" class="status">inactive</strong>
                                             }
                                         </div>
-                                        @if (emailConfimed)
+                                        @if (emailConfimed == true)
                                         {
                                             <div class="status-text">You can post your own products</div>
                                         }
@@ -81,6 +83,7 @@
                                         {
                                             <div class="status-text">Confirm your email to gain pro status</div>
                                         }
+                                        <a asp-controller="User" asp-action="MyProfile">My profile</a>
                                         <a asp-controller="Settings" asp-action="Index">Settings</a>
                                         <a asp-controller="User" asp-action="Logout">Log out</a>
                                     </div>

@@ -3,6 +3,10 @@ using Shop.Models;
 using Microsoft.AspNetCore.Identity;
 using Shop.ViewModels;
 using Shop.Data;
+using System.Diagnostics;
+using Shop.Services;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Shop.Controllers
 {
@@ -10,12 +14,16 @@ namespace Shop.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<UserController> _logger;  
-        private readonly SignInManager<AppUser> _signInManager;        
-        public UserController(UserManager<AppUser> userManager, ILogger<UserController> logger, SignInManager<AppUser> signInManager)
+        private readonly SignInManager<AppUser> _signInManager;
+        private readonly DatabaseService _databaseService;
+        private readonly IConfiguration _configuration;
+        public UserController(UserManager<AppUser> userManager, ILogger<UserController> logger, SignInManager<AppUser> signInManager, DatabaseService databaseService, IConfiguration configuration)
         {
             _userManager = userManager;
             _logger = logger;
-            _signInManager = signInManager;            
+            _signInManager = signInManager;
+            _databaseService = databaseService;
+            _configuration = configuration;
         }
         public IActionResult Index()
         {
@@ -38,7 +46,8 @@ namespace Shop.Controllers
                     Name = user.Name,
                     Email = user.Email,
                     PasswordHash = user.Password,
-                    CartToken = cartId
+                    CartToken = cartId,
+                    UserPhoto = _configuration["DefaultUserImage"]
                 };
                 IdentityResult result = await _userManager.CreateAsync(appUser, user.Password);
                 if (result.Succeeded)
@@ -91,6 +100,16 @@ namespace Shop.Controllers
         {
             Response.Cookies.Append("cartToken", User.FindFirst("CartToken")?.Value);
             return Redirect("/Home/Index");
+        }
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+        [Authorize]
+        public IActionResult MyProfile()
+        {
+            var user = _databaseService.GetUser(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            return View(user);
         }
     }
 }

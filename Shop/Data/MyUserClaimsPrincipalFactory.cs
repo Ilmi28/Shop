@@ -13,6 +13,7 @@ namespace Shop.Data
             var identity = await base.GenerateClaimsAsync(user);
             identity.AddClaim(new Claim("Name", user.Name));
             identity.AddClaim(new Claim("CartToken", user.CartToken));
+            identity.AddClaim(new Claim("HasProStatus", user.HasProStatus.ToString()));
             return identity;
         }
     }

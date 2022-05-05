@@ -44,7 +44,7 @@ html {
     padding-top: 65px;
 }
 body {
-    margin-bottom: 60px;
+    margin-bottom: 300px;
     padding: 0;
 }
 .dropdown{
@@ -157,7 +157,16 @@ body {
     border-radius: 30px;
     position: absolute;
     top: 6px;
-    right: 180px;
+    right: 220px;
+}
+#user-photo-navbar{
+    height: 40px;
+    width: 40px;
+    position: absolute;
+    right: 145px;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 30px;
 }
 #category-item-btn:hover{
     background-color: black;
@@ -225,28 +234,6 @@ body {
     border: solid #0d6efd 1px;
     color: #0d6efd;
     background-color: white;
-}
-.item-delete-btn{
-    position: absolute;
-    right: 5px;
-    top: 140px;
-    background-color: red;
-    font-size: 13px
-}
-.item-edit-btn{
-    position: absolute;
-    top: 140px;
-    right: 70px;
-    font-size: 13px;
-}
-.item-edit-btn:hover {
-    color: #fec107;
-    background-color: white;
-}
-.item-delete-btn:hover{
-    background-color: white;
-    color: red;
-    border: solid red 1px;
 }
 .submit-button-edit:hover {
     color: #caa410;
@@ -460,7 +447,7 @@ body {
     border-radius: 10px;
 }
 .cart-item-img{
-    height: 100px;
+    height: 99px;
     border-radius: 10px;
 }
 .cart-item-photo-block{
@@ -504,7 +491,7 @@ body {
 }
 .cart-total-price{
     position: absolute;
-    right: 230px;
+    right: 275px;
     top: 15px;
     color: white;
 }
@@ -517,7 +504,7 @@ body {
     display: flex;
     justify-content: center;
     position: absolute;
-    right: 170px;
+    right: 249px;
     top: 8px;
     z-index: 2;
 }
@@ -586,6 +573,137 @@ body {
     background-color: white;
     color: black;
 }
+.user-photo-profile{
+    height: 300px;
+    width: 300px;
+    object-fit: cover;
+    border-radius: 200px;
+}
+.user-photo-profile:hover{
+    background-color: black;
+    opacity: 40%;
+}
+.user-photo-profile:hover div{
+    visibility: hidden;
+}
+.photo-profile-darker{
+    background-color: black;
+    height: 300px;
+    color: white;
+    width: 300px;
+    object-fit: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 200px;
+    margin-top: -300px;
+}
+.photo-profile-darker div{
+    visibility: hidden;
+}
+.user-photo-profile:hover + .photo-profile-darker div{
+    visibility: visible;
+}
+.user-name-profile{
+    position: absolute;
+    margin-left: 320px;
+    margin-top: -300px;
+    font-size: 32px;
+}
+.user-email-profile{
+    margin-top: -280px;
+    position: absolute;
+    margin-left: 320px;
+    font-size: 20px;
+}
+.go-to-settings-btn{
+    position: absolute;
+    margin-left: 320px;
+    margin-top: -40px;
+}
+.go-to-settings-btn:hover{
+    background-color: white;
+    color: black;
+}
+#change-photo-preview{
+    height: 300px;
+    width: 300px;
+    object-fit: cover;
+    margin-left: 35px;
+    border-radius: 200px;
+}
+.change-user-photo-submit:hover{
+    background-color: white;
+    color: black;
+}
+.change-user-photo-cancel:hover{
+    background-color: white;
+    color: blue;
+}
+.my-product-block{
+    border: solid black 1px;
+    margin-top: 20px;
+    height: 100px;
+    border-radius: 10px;
+}
+.my-product-photo{
+    height: 98px;
+    border-radius: 10px;
+}
+.my-product-photo-block{
+    height: 100px;
+    display: flex;
+    justify-content: left;
+    width: 200px;
+}
+.my-product-name{
+    position: absolute;
+    margin-left: 200px;
+    margin-top: -100px;
+    font-size: 27px;
+}
+.my-product-price{
+    font-size: 15px;
+    position: absolute;
+    margin-left: 200px;
+    margin-top: -65px;
+}
+.my-product-see-more{
+    text-decoration: none;
+    position: absolute;
+    margin-left: 200px;
+    margin-top: -40px;
+    color: dodgerblue;
+    transition: color ease-in-out 400ms;
+}
+.my-product-see-more:hover{
+    color: deepskyblue;
+}
+.my-product-delete-btn{
+    width: 50px;
+    background-color: red;
+    margin-left: -2px;
+    font-size: 10px;
+}
+.my-product-delete-btn:hover{
+    background-color: white;
+    color: red;
+}
+.my-product-edit-btn{
+    font-size: 10px;
+}
+.my-product-edit-btn:hover{
+    color: orange;
+    background-color: white;
+}
+.my-product-buttons{
+    position: absolute;
+    right: 205px;
+    margin-top: -33px;
+}
+.my-product-category{
+    font-size: 18px;
+}
 @media (max-width: 575px){
     .sign-up-btn {
         position: relative;
@@ -601,10 +719,10 @@ body {
         position: relative;
         left: 70px;
         height: 15px;
-        top: -5px;
+        top: 0px;
     }
     .dropdown-user-menu-content{
-        left: -70px;
+        left: -90px;
     }
     .cart-total-price{
         right: 125px;
@@ -624,7 +742,7 @@ body {
     .cart-amount-bar{
         left: 210px;
         margin-top: -10px;
-        width: 140px;
+        width: 142px;
     }
     .cart-delete-item-btn{
         margin-top: 40px;
@@ -632,6 +750,12 @@ body {
     }
     #cart-bar{
         margin-right: -10px;
+    }
+    #user-photo-navbar{
+        left: 0px;
+        height: 30px;
+        width: 30px;
+        position: relative;
     }
 }
 @media (max-width: 768px) {
@@ -716,5 +840,20 @@ body {
     }
     .go-to-delivery-btn {
         right: 35px;
+    }
+    .user-name-profile{
+        margin-left: 0px;
+        margin-top: 30px;
+        font-size: 25px;
+    }
+    .user-email-profile{
+        margin-left: 0px;
+        margin-top: 45px;
+        
+    }
+    .go-to-settings-btn{
+        position: relative;
+        margin-left: 65%;
+        margin-top: -790px;
     }
 }

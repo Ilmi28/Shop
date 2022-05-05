@@ -23,13 +23,17 @@ namespace Shop.Controllers
         private readonly IEmailSender _emailSender;
         private readonly CryptographyService _cryptographyService;
         private ILogger<SettingsController> _logger;
+        private IWebHostEnvironment _env;
+        private readonly IConfiguration _config;
         public SettingsController(AppIdentityDbContext context, 
             DatabaseService databaseService, 
             ILogger<SettingsController> logger, 
             UserManager<AppUser> userManager, 
             SignInManager<AppUser> signInManager, 
             IEmailSender emailSender,
-            CryptographyService cryptographyService) 
+            CryptographyService cryptographyService,
+            IWebHostEnvironment env,
+            IConfiguration config) 
         {
             _databaseService = databaseService;
             _context = context;
@@ -38,6 +42,8 @@ namespace Shop.Controllers
             _signInManager = signInManager;
             _emailSender = emailSender;
             _cryptographyService = cryptographyService;
+            _env = env;
+            _config = config;
         }
         public IActionResult Index()
         {            
@@ -108,12 +114,12 @@ namespace Shop.Controllers
         }
         public async Task<IActionResult> DeleteUserAccount(string token)
         {
-            string deleteUserToken = Request.Cookies["deleteUserToken"];
+            string? deleteUserToken = Request.Cookies["deleteUserToken"];
             string decryptedToken = _cryptographyService.Decrypt(_cryptographyService.GetKey(), _cryptographyService.GetIV(), deleteUserToken);
             if(decryptedToken == token)
             {
                 var user = _databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                _signInManager.SignOutAsync();
+                await _signInManager.SignOutAsync();
                 await _emailSender.SendEmailAsync(user.Email, "Account deleted", "Your account has been deleted successfully;(");
                 _context.Users.Remove(user); 
                 _context.SaveChanges();
@@ -124,7 +130,7 @@ namespace Shop.Controllers
         [AllowAnonymous]
         public IActionResult SuccessfulAccountDeleting(string id)
         {
-            string deleteUserToken = Request.Cookies["deleteUserToken"];
+            string? deleteUserToken = Request.Cookies["deleteUserToken"];
             if(deleteUserToken == null)
             {
                 return NotFound();
@@ -157,7 +163,7 @@ namespace Shop.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> ConfirmEmail(string userId)
+        public IActionResult ConfirmEmail(string userId)
         {
             var user = _databaseService.GetUser(userId);
             if(user != null)
@@ -186,6 +192,9 @@ namespace Shop.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, code);
             if (result.Succeeded)
             {
+                user.HasProStatus = true;
+                await _context.SaveChangesAsync();
+                await _signInManager.RefreshSignInAsync(user);
                 return RedirectToAction("SuccessfulEmailConfirmation", new { userId = userId });
             }
             return NotFound();
@@ -198,6 +207,37 @@ namespace Shop.Controllers
                 return View();
             }
             return NotFound();
+        }
+        public IActionResult ChangeProfileImage()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult ChangeProfileImage(UserViewModel userViewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("User don't fill form properly");
+                return View();
+            }
+            string folderPath = Path.Combine(_env.WebRootPath, "img", "userImages");
+            string? userPhoto = userViewModel.UserPhoto?.FileName;
+            if(userPhoto == null)
+            {
+                _logger.LogWarning("User photo was null");
+                return View();
+            };
+            var user = _databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            string oldFileName = user.UserPhoto;
+            string oldFilePath = Path.Combine(_env.WebRootPath, "img", "userImages", oldFileName);
+            string? fileName = _databaseService.UploadFile(userViewModel.UserPhoto, folderPath, userPhoto);
+            if(oldFileName != _config["DefaultUserImage"] && System.IO.File.Exists(oldFilePath))
+            {
+                System.IO.File.Delete(oldFilePath);
+            }
+            user.UserPhoto = fileName;
+            _context.SaveChanges();
+            return Redirect("/User/MyProfile");
         }
     }
 }

@@ -19,5 +19,7 @@ namespace Shop.Models
         public int ProductCategoryId { get; set; }
         public Category Category { get; set; }
         public ICollection<CartProduct> CartProducts { get; set; }
+        [Required]
+        public string Creator { get; set; }
     }
 }

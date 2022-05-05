@@ -23,5 +23,7 @@ namespace Shop.Models
         public bool DefaultPhoto { get; set; }
         [RegularExpression(@"/.*\.(gif|jpe?g|bmp|png)$/igm", ErrorMessage = "Only Image files allowed.")]
         public string? MonitorPhoto { get; set; }
+        [Required]
+        public string Creator { get; set; }
     }
 }
