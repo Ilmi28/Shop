@@ -4,8 +4,10 @@
 @using System.Security.Claims;
 @inject Shop.Data.AppDbContext context
 @inject IConfiguration config
+@inject Shop.Services.UrlService urlService
 @{
     var products = context.Products.Where(x => x.Creator == User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
+    urlService.SetPreviousUrl();
 }
 <h1>My Profile</h1>
 <hr />
@@ -22,18 +24,28 @@
 <br />
 <br />
 <h2>My products</h2>
+<a asp-controller="Home" asp-action="AddProduct"><button class="btn btn-dark my-products-add-product-btn">Add Product</button></a>
 <hr />
+@if(products.Count == 0)
+{
+    <h4 class="text-muted">You don't have any products</h4>
+}
 @for(int i = 0; i < products.Count; i++){
     
-    string? category = context.Categories.FirstOrDefault(x => x.Id == products[i].ProductCategoryId)?.Name;
+    string? categoryName = context.Categories.FirstOrDefault(x => x.Id == products[i].ProductCategoryId)?.Name;
+    string photoFolderName = String.Empty;
+    if (categoryName == "Monitors")
+        photoFolderName = "monitorsImages";
+    if (categoryName == "Smartphones")
+        photoFolderName = "smartphonesImages";
     <div class="my-product-block">
-        <div class="my-product-photo-block"><img src="~/img/monitorImages/@products[i].ProductPhoto" class="my-product-photo"/></div>
-        <span class="my-product-name"><strong>@products[i].ProductName</strong><span class="text-muted my-product-category"> - @category</span></span>
+        <div class="my-product-photo-block"><img src="~/img/@photoFolderName/@products[i].ProductPhoto" class="my-product-photo"/></div>
+        <span><strong class="my-product-name">@products[i].ProductName <span class="text-muted my-product-category"> - @categoryName</span></strong><span class="text-muted my-product-category-mobile">@categoryName</span></span>
         <p class="my-product-price">Price: @(products[i].ProductPrice)$</p>
-        <a asp-controller="@category" asp-action="Details" asp-route-id="@products[i].ProductNativeId" class="my-product-see-more">See more</a>
+        <a asp-controller="@categoryName" asp-action="Details" asp-route-id="@products[i].ProductNativeId" class="my-product-see-more">See more</a>
         <div class="my-product-buttons">
-            <a asp-controller="@category" asp-action="Edit" asp-route-id="@products[i].ProductNativeId"><input type="button" class="btn btn-warning my-product-edit-btn" value="Edit"/></a>
-            <a asp-controller="@category" asp-action="Delete" asp-route-id="@products[i].ProductNativeId"><input value="Delete" class="btn btn-danger my-product-delete-btn" type="button"/></a>
+            <a asp-controller="@categoryName" asp-action="Edit" asp-route-id="@products[i].ProductNativeId"><input type="button" class="btn btn-warning my-product-edit-btn" value="Edit"/></a>
+            <a asp-controller="@categoryName" asp-action="Delete" asp-route-id="@products[i].ProductNativeId"><input value="Delete" class="btn btn-danger my-product-delete-btn" type="button"/></a>
         </div>
     </div>
 }

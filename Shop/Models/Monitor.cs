@@ -16,14 +16,18 @@ namespace Shop.Models
         public string Resolution { get; set; }
         [Required]
         public string Refreshening { get; set; }
-        public Category Category { get; set; }
-        [Required]
-        public int CategoryId { get; set; }
         [Required]
         public bool DefaultPhoto { get; set; }
         [RegularExpression(@"/.*\.(gif|jpe?g|bmp|png)$/igm", ErrorMessage = "Only Image files allowed.")]
         public string? MonitorPhoto { get; set; }
         [Required]
         public string Creator { get; set; }
+        [DataType(DataType.DateTime)]
+        public DateTime? Created { get; set; }
+        [Required]
+        public int Stock { get; set; }
+        public int CategoryId { get; set; }
+        public Product Product { get; set; }
+        public int ProductId { get; set; }
     }
 }

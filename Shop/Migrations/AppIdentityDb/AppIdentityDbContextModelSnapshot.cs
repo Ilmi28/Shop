@@ -175,7 +175,8 @@ namespace Shop.Migrations.AppIdentityDb
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)

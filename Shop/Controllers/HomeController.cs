@@ -21,7 +21,9 @@ namespace Shop.Controllers
         }
         public IActionResult Index()
         {
-            return View();
+            
+            var products = _context.Products.OrderBy(x => x.Created).ToList();
+            return View(products);
         }
         public IActionResult Privacy()
         {
@@ -40,8 +42,9 @@ namespace Shop.Controllers
         [Authorize]
         public IActionResult AddProduct()
         {
-            var category = _context.Categories;
-            return View(category);
+            
+            var categories = _context.Categories.ToList();
+            return View(categories);
         }
     }
 }

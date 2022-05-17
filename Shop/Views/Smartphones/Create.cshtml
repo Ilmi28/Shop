@@ -1,0 +1,81 @@
+﻿@model Shop.ViewModels.SmartphoneViewModel
+@inject Shop.Services.UrlService urlService
+@{
+    ViewData["Title"] = "Create";
+    var previousUrl = urlService.GetPreviousUrl();
+}
+<h1>Create</h1>
+<hr />
+<br />
+<form asp-action="Create" id="smartphone-create-form" enctype="multipart/form-data">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" id="smartphone-name-input" class="form-control"/>
+        <small id="smartphone-name-error"></small>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for="Price"></label>
+        <input asp-for="Price" id="smartphone-price-input" class="form-control"/>
+        <small id="smartphone-price-error"></small>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for="Memory"></label>
+        <select asp-for="Memory" class="form-control" id="smartphone-memory-input">
+            <option selected disabled value="">SELECT</option>
+            <option value="32">32GB</option>
+            <option value="64">64GB</option>
+            <option value="128">128GB</option>
+            <option value="256">256GB</option>
+        </select>
+        <small id="smartphone-memory-error"></small>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for="RAM"></label>
+        <select asp-for="RAM" id="smartphone-RAM-input" class="form-control">
+            <option selected disabled value="">SELECT</option>
+            <option value="4">4GB</option>
+            <option value="8">8GB</option>
+            <option value="16">16GB</option>
+        </select>
+        <small id="smartphone-RAM-error"></small>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for="ScreenDiagonal"></label>
+        <input asp-for="ScreenDiagonal" id="smartphone-diagonal-input" class="form-control"/>
+        <small id="smartphone-diagonal-error"></small>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for="CameraResolution"></label>
+        <input asp-for="CameraResolution" id="smartphone-camera-resolution-input" class="form-control"/>
+        <small id="smartphone-camera-resolution-error"></small>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for="Stock"></label>
+        <input asp-for="Stock" id="smartphone-stock-input" class="form-control"/>
+        <small id="smartphone-stock-error"></small>
+    </div>
+    <br />
+    <div class="form-group">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="DefaultPhoto" id="smartphone-checkbox" onclick="setDefaultPhoto('smartphone-photo-input', this.id)"/>
+            <label class="form-check-label" asp-for="DefaultPhoto"></label>
+        </div>
+    </div>
+    <br />
+    <div class="form-group">
+        <label asp-for="SmartphonePhoto"></label>
+        <input type="file" asp-for="SmartphonePhoto" id="smartphone-photo-input" class="form-control" onchange="validateImage(this.id, 'smartphone-photo-error')"/>
+        <small id="smartphone-photo-error"></small>
+    </div>
+    <br />
+    <br />
+    <input type="submit" value="Create" class="btn btn-dark submit-button"/>
+    <a href="@previousUrl"><input type="button" value="Cancel" class="btn btn-primary cancel-button"/></a>
+</form>
+<script src="~/js/smartphoneCreateValidation.js"></script>

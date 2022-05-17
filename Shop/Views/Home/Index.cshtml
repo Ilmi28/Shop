@@ -1,25 +1,131 @@
-﻿@{
+﻿@using Shop.Data
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Identity;
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject AppDbContext context
+@inject IHttpContextAccessor httpContextAccessor
+@inject Shop.Services.DatabaseService databaseService;
+@inject Shop.Services.UrlService urlService
+@{
+    string? cartId = httpContextAccessor.HttpContext.Request.Cookies["cartToken"];
+    int counter = 0;
+    var user = databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+    string? userId = user?.Id;
+    var allProducts = context.Products.ToList();
+    var availableProducts = context.Products.Where(x => x.Creator != userId).ToList();
     ViewData["Title"] = "Main Page";
+    urlService.SetPreviousUrl();
 }
-
-<div class="text-center">
-    <div id="greeting">
-        <h4 class="display-1">Witaj w naszym sklepie!</h4>
-        <h2 class="display-2">Tu na pewno znajdziejsz coś dla siebie!</h2>
-        <br />
-    </div>
+<div class="main-content">
+    <h2>Available products:</h2>
+    @if(User.Identity.IsAuthenticated && user.HasProStatus){
+        <a asp-action="AddProduct" asp-controller="Home" class="btn btn-dark add-product-btn">Add Product</a>
+    }
+    <hr />
     <br />
-    <h1 id="most_popular_products" class="display-5">Najpopularniejsze produkty:</h1>
+    <br />
+    @if(!User.Identity.IsAuthenticated && allProducts.Count == 0 || User.Identity.IsAuthenticated && availableProducts.Count == 0)
+        {
+            <h1>Nothing found here;(</h1>
+        }
+    <ul class="all-items">
+        @foreach(var product in Model)
+        {
+            int categoryId = product.ProductCategoryId;
+            int productId = product.Id;
+            string? category = context.Categories.FirstOrDefault(x => x.Id == categoryId)?.Name;
+            int nativeId = 0;
+            string photoFolderName = String.Empty;
+            if (category == "Monitors")
+            {
+                photoFolderName = "monitorsImages";
+                nativeId = context.Monitors.FirstOrDefault(x => x.ProductId == productId).Id;
+            }
+            if (category == "Smartphones"){
+                photoFolderName = "smartphonesImages";
+                nativeId = context.Smartphones.FirstOrDefault(x => x.ProductId == productId).Id;
+            }
+            if (User.Identity.IsAuthenticated && product.Creator != user.Id || !User.Identity.IsAuthenticated) {
+                <li class="item-block">
+                    <div class="item-content">
+                        <div class="photo-block"><div class="photo-block"><img class="item-photo" src="~/img/@photoFolderName/@product.ProductPhoto" asp-append-version="true"></div></div>
+                        <span class="item-name">@product.ProductName <span class="text-muted category-name-item"> - @category</span></span>
+                        <span class="item-price">Price: @(product.ProductPrice)$</span>
+                        <span class="item-stock">Stock: @product.Stock</span>
+                        <a class="item-see-more" asp-controller="@category" asp-action="Details" asp-route-id="@nativeId">See More</a>
+                        @if (product.Stock != 0)
+                        {
+                            <ul class="counter">
+                                <li class="btn btn-dark minus" id="minus-@counter" onclick="decrease_@counter ()">-</li>
+                                <li class="btn"><input style="width: 30px" id="number-@counter" name="amount" value="0" disabled/></li>
+                                <li class="btn btn-dark plus" id="plus-@counter" onclick="increase_@counter ()">+</li>  
+                            </ul>
+                            int? cartProductAmount = databaseService.GetCartProductByProductIdAndCartToken(productId, cartId)?.Quantity;
+                            <button class="btn btn-success item-add-to-cart-btn" id="add-to-cart-btn-@counter" onclick="redirect_@counter ()"><i class="bi bi-cart"></i>Add to cart</button>
+                            <script>
+                                var minus_@counter = document.getElementById("minus-@counter");
+                                var plus_@counter = document.getElementById("plus-@counter");
+                                var number_@counter = document.getElementById("number-@counter");
+                                var num_@counter = 0;
+                                var addToCartBtn_@counter = document.getElementById("add-to-cart-btn-@counter");
+                                var max_@counter = @product.Stock - @(cartProductAmount ?? 0);
+                                var min = 0;
+                                minus_@counter .classList.add("disabled");
+                                addToCartBtn_@counter .classList.add("disabled");
+                                if(max_@counter == 0){
+                                minus_@counter. classList.add("disabled");
+                                plus_@counter .classList.add("disabled");
+                                }
+                                function increase_@counter (){
+                                if(num_@counter < max_@counter){
+                                num_@counter = num_@counter + 1;
+                                addToCartBtn_@counter .classList.remove("disabled");
+                                minus_@counter .classList.remove("disabled");
+                                }
+                                if(num_@counter == max_@counter){
+                                plus_@counter .classList.add("disabled");
+                                }
+                                number_@counter .value = num_@counter;                            
+                                }
+                                function decrease_@counter (){
+                                if(num_@counter > min){
+                                num_@counter = num_@counter - 1;
+                                addToCartBtn_@counter .classList.remove("disabled");
+                                plus_@counter .classList.remove("disabled");
+                                }
+                                if(num_@counter == min){
+                                addToCartBtn_@counter .classList.add("disabled");
+                                minus_@counter .classList.add("disabled");
+                                }
+                                number_@counter .value = num_@counter;
+
+                                }
+                                function redirect_@counter (){
+                                const url = window.location.href;
+                                let domain = new URL(url);
+                                location.replace(domain.origin + "/Cart/AddToCart/" + @productId + "?amount=" + number_@counter .value)
+                                }                        
+
+                            </script>
+                        }
+                        else
+                        {
+                            <span class="text-danger out-of-stock-item">Out of stock</span>
+                        }
+                    </div>
+                </li>
+            }
+            <br />
+            counter++;
+        }
+    </ul>
 </div>
 <style>
-    #greeting{
-        background-image: linear-gradient(90deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-        color: white;
-        border-radius: 20px;
-    }
-    #most_popular_products{
-        margin-right: 20%;
-        text-align: left;
-        width: 100%;    
+    .category-name-item{
+        font-size: 18px;
+        font-weight: 400;
+        margin-top: -20px;
     }
 </style>

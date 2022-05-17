@@ -1,0 +1,112 @@
+﻿@using Shop.Data
+@using System.Security.Claims;
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject AppDbContext context
+@inject IHttpContextAccessor httpContextAccessor
+@inject Shop.Services.DatabaseService databaseService;
+@inject Shop.Services.UrlService urlService
+@{
+    string? cartId = httpContextAccessor.HttpContext.Request.Cookies["cartToken"];
+    int counter = 0;
+    var user = databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+    string? userId = user?.Id;
+    var allSmartphones = context.Smartphones.ToList();
+    var availableSmartphones = context.Smartphones.Where(x => x.Creator != userId).ToList();
+    ViewData["Title"] = "Smartphones";
+    urlService.SetPreviousUrl();
+}
+<div class="main-content">
+    <h2>Available smartphones:</h2>
+    @if(User.Identity.IsAuthenticated && user.HasProStatus){
+        <a asp-action="AddProduct" asp-controller="Home" class="btn btn-dark add-product-btn">Add Product</a>
+    }   
+    <hr />
+    <br />
+    <br />  
+    @if(!User.Identity.IsAuthenticated && allSmartphones.Count == 0 || User.Identity.IsAuthenticated && availableSmartphones.Count == 0)
+        {
+            <h1>Nothing found here;(</h1>
+        }
+    <ul class="all-items">
+        @foreach(var smartphone in Model)
+        {
+            if (User.Identity.IsAuthenticated && smartphone.Creator != user.Id || !User.Identity.IsAuthenticated) {
+                <li class="item-block">
+                    <div class="item-content">
+                        <div class="photo-block"><div class="photo-block"><img class="item-photo" src="~/img/smartphonesImages/@smartphone.SmartphonePhoto" asp-append-version="true"></div></div>
+                        <span class="item-name">@smartphone.Name</span>
+                        <span class="item-price">Price: @smartphone.Price$</span>
+                        <span class="item-stock">Stock: @smartphone.Stock</span>
+                        <a class="item-see-more" asp-controller="Smartphones" asp-action="Details" asp-route-id="@smartphone.Id">See More</a>
+                        @if (smartphone.Stock != 0)
+                        {
+                            <ul class="counter">
+                                <li class="btn btn-dark minus" id="minus-@counter" onclick="decrease_@counter ()">-</li>
+                                <li class="btn"><input style="width: 30px" id="number-@counter" name="amount" value="0" disabled/></li>
+                                <li class="btn btn-dark plus" id="plus-@counter" onclick="increase_@counter ()">+</li>  
+                            </ul>
+                            int? nativeId = smartphone.Id;
+                            int? productId = databaseService.GetProductBySmartphoneNativeId(nativeId)?.Id;
+                            int? cartProductAmount = databaseService.GetCartProductByProductIdAndCartToken(productId, cartId)?.Quantity;
+                            var product = databaseService.GetProduct(productId);
+                            <button class="btn btn-success item-add-to-cart-btn" id="add-to-cart-btn-@counter" onclick="redirect_@counter ()"><i class="bi bi-cart"></i>Add to cart</button>
+                            <script>
+                                var minus_@counter = document.getElementById("minus-@counter");
+                                var plus_@counter = document.getElementById("plus-@counter");
+                                var number_@counter = document.getElementById("number-@counter");
+                                var num_@counter = 0;
+                                var addToCartBtn_@counter = document.getElementById("add-to-cart-btn-@counter");
+                                var max_@counter = @product.Stock - @(cartProductAmount ?? 0);
+                                var min = 0;
+                                minus_@counter .classList.add("disabled");
+                                addToCartBtn_@counter .classList.add("disabled");
+                                if(max_@counter == 0){
+                                minus_@counter. classList.add("disabled");
+                                plus_@counter .classList.add("disabled");
+                                }
+                                function increase_@counter (){
+                                if(num_@counter < max_@counter){
+                                num_@counter = num_@counter + 1;
+                                addToCartBtn_@counter .classList.remove("disabled");
+                                minus_@counter .classList.remove("disabled");
+                                }
+                                if(num_@counter == max_@counter){
+                                plus_@counter .classList.add("disabled");
+                                }
+                                number_@counter .value = num_@counter;                            
+                                }
+                                function decrease_@counter (){
+                                if(num_@counter > min){
+                                num_@counter = num_@counter - 1;
+                                addToCartBtn_@counter .classList.remove("disabled");
+                                plus_@counter .classList.remove("disabled");
+                                }
+                                if(num_@counter == min){
+                                addToCartBtn_@counter .classList.add("disabled");
+                                minus_@counter .classList.add("disabled");
+                                }
+                                number_@counter .value = num_@counter;
+
+                                }
+                                function redirect_@counter (){
+                                const url = window.location.href;
+                                let domain = new URL(url);
+                                location.replace(domain.origin + "/Cart/AddToCart/" + @productId + "?amount=" + number_@counter .value)
+                                }                        
+
+                            </script>
+                        }
+                        else
+                        {
+                            <span class="text-danger out-of-stock-item">Out of stock</span>
+                        }
+                    </div>
+                </li>
+            }
+            <br />
+            counter++;
+        }
+    </ul>
+</div>

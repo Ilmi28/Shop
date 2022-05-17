@@ -21,7 +21,7 @@ namespace Shop.Controllers
         {
             string cartToken = Request.Cookies["cartToken"];
             var cartItems = _context.CartProducts.Where(x => x.CartToken == cartToken).ToList();
-            Response.Cookies.Append("previousUrl", Request.Path);
+            
             return View(cartItems);
         }
         public RedirectResult AddToCart(int id, int amount)
@@ -45,6 +45,10 @@ namespace Shop.Controllers
                 Quantity = amount <= 0 ? amount = 1 : amount,
                 ProductId = product.Id
             };
+            if(cartProduct.Quantity > product.Stock)
+            {
+                cartProduct.Quantity = product.Stock;
+            }
             _context.CartProducts.Add(cartProduct);
             foreach(var item in cartItems)
             {
@@ -64,24 +68,27 @@ namespace Shop.Controllers
         }
         public RedirectResult Delete(int id)
         {
-            var cartProduct = _databaseService.GetCartProdut(id);
+            var cartProduct = _databaseService.GetCartProduct(id);
             string previousUrl = Request.Cookies["previousUrl"];
             _context.CartProducts.Remove(cartProduct);
             _context.SaveChanges();
             return Redirect(previousUrl);
         }
+        //Add product in cart(+)
         public RedirectResult AddCartProduct(int id)
         {
-            var cartProduct = _databaseService.GetCartProdut(id);
-            if(cartProduct.Quantity < 30)
+            var cartProduct = _databaseService.GetCartProduct(id);
+            var product = _databaseService.GetProduct(cartProduct.ProductId);
+            if(cartProduct.Quantity < product.Stock)
                 cartProduct.Quantity += 1;                   
             _context.SaveChanges();
             var previousUrl = Request.Cookies["previousUrl"];
             return Redirect(previousUrl);
         }
+        //Substract product in cart(-)
         public RedirectResult SubstractCartProduct(int id)
         {
-            var cartProduct = _databaseService.GetCartProdut(id);
+            var cartProduct = _databaseService.GetCartProduct(id);
             if (cartProduct.Quantity > 1)
                 cartProduct.Quantity -= 1;            
             _context.SaveChanges();

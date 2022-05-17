@@ -28,6 +28,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection("Mailkit"));
 builder.Services.Configure<CipherOptions>(builder.Configuration.GetSection("Cryptography"));
 builder.Services.AddTransient<IEmailSender, EmailService>();
+builder.Services.AddScoped<UrlService>();
 builder.Services.AddScoped<CryptographyService>();
 builder.Services.AddScoped<DatabaseService>();
 builder.Services.AddScoped<IAuthorizationHandler, ProductOwnerRequirementHandler>();
@@ -38,7 +39,7 @@ builder.Services.AddAuthorization(options =>
 });
 builder.Services.ConfigureApplicationCookie(options => {
     options.LoginPath = "/User/SignIn";
-    options.AccessDeniedPath = "/User/AccessDenied";
+    options.AccessDeniedPath = "/Error/AccessDenied";
 });
 builder.Services.AddMemoryCache();
 builder.Services.AddSession();

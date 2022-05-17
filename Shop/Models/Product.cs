@@ -6,8 +6,7 @@ namespace Shop.Models
     public class Product
     {
         public int Id { get; set; }
-        [Required]
-        public int ProductNativeId { get; set; }
+        public int? ProductNativeId { get; set; }
         [Required]
         public string ProductPhoto { get; set; }
         [Required]
@@ -21,5 +20,9 @@ namespace Shop.Models
         public ICollection<CartProduct> CartProducts { get; set; }
         [Required]
         public string Creator { get; set; }
+        [DataType(DataType.DateTime)]
+        public DateTime? Created { get; set; }
+        [Required]
+        public int Stock { get; set; }
     }
 }

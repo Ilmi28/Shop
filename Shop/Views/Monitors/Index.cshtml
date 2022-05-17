@@ -1,26 +1,32 @@
 ﻿@using Shop.Data
 @using System.Security.Claims;
+@using Microsoft.AspNetCore.Identity;
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @inject AppDbContext context
 @inject IHttpContextAccessor httpContextAccessor
 @inject Shop.Services.DatabaseService databaseService;
+@inject Shop.Services.UrlService urlService
 @{
     string? cartId = httpContextAccessor.HttpContext.Request.Cookies["cartToken"];
     int counter = 0;
     var user = databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+    string? userId = user?.Id;
+    var allMonitors = context.Monitors.ToList();
+    var availableMonitors = context.Monitors.Where(x => x.Creator != userId).ToList();
+    urlService.SetPreviousUrl();
     ViewData["Title"] = "Monitors";
 }
 <div class="main-content">
-    <h2>Available products:</h2>
+    <h2>Available monitors:</h2>
     @if(User.Identity.IsAuthenticated && user.HasProStatus){
         <a asp-action="AddProduct" asp-controller="Home" class="btn btn-dark add-product-btn">Add Product</a>
     }   
     <hr />
     <br />
     <br />
-    @if(Model.Count == 0)
+    @if(!User.Identity.IsAuthenticated && allMonitors.Count == 0 || User.Identity.IsAuthenticated && availableMonitors.Count == 0)
         {
             <h1>Nothing found here;(</h1>
         }
@@ -30,66 +36,73 @@
             if (User.Identity.IsAuthenticated && monitor.Creator != user.Id || !User.Identity.IsAuthenticated) {
                 <li class="item-block">
                     <div class="item-content">
-                        <div class="photo-block"><div class="photo-block"><img class="item-photo" src="~/img/monitorImages/@monitor.MonitorPhoto" asp-append-version="true"></div></div>
+                        <div class="photo-block"><div class="photo-block"><img class="item-photo" src="~/img/monitorsImages/@monitor.MonitorPhoto" asp-append-version="true"></div></div>
                         <span class="item-name">@monitor.Name</span>
                         <span class="item-price">Price: @monitor.Price$</span>
-                        <a class="monitors-see-more" asp-controller="Monitors" asp-action="Details" asp-route-id="@monitor.Id">See More</a>
-                        <ul class="counter">
-                            <li class="btn btn-dark minus" id="minus-@counter" onclick="decrease_@counter ()">-</li>
-                            <li class="btn"><input style="width: 30px" id="number-@counter" name="amount" value="0" disabled/></li>
-                            <li class="btn btn-dark plus" id="plus-@counter" onclick="increase_@counter ()">+</li>  
-                        </ul>
-                        @{
+                        <span class="item-stock">Stock: @monitor.Stock</span>
+                        <a class="item-see-more" asp-controller="Monitors" asp-action="Details" asp-route-id="@monitor.Id">See More</a>
+                        @if (monitor.Stock != 0)
+                        {
+                            <ul class="counter">
+                                <li class="btn btn-dark minus" id="minus-@counter" onclick="decrease_@counter ()">-</li>
+                                <li class="btn"><input style="width: 30px" id="number-@counter" name="amount" value="0" disabled/></li>
+                                <li class="btn btn-dark plus" id="plus-@counter" onclick="increase_@counter ()">+</li>  
+                            </ul>
                             int? nativeId = monitor.Id;
-                            int? productId = databaseService.GetProductMonitorByIdAndCategory(nativeId)?.Id;
+                            int? productId = databaseService.GetProductByMonitorNativeId(nativeId)?.Id;
                             int? cartProductAmount = databaseService.GetCartProductByProductIdAndCartToken(productId, cartId)?.Quantity;
-                        }
-                        <button class="btn btn-success monitors-add-to-cart-btn" id="add-to-cart-btn-@counter" onclick="redirect_@counter ()"><i class="bi bi-cart"></i>Add to cart</button>
-                        <script>
-                            var minus_@counter = document.getElementById("minus-@counter");
-                            var plus_@counter = document.getElementById("plus-@counter");
-                            var number_@counter = document.getElementById("number-@counter");
-                            var num_@counter = 0;
-                            var addToCartBtn_@counter = document.getElementById("add-to-cart-btn-@counter");
-                            var max_@counter = 30 - @(cartProductAmount ?? 0);
-                            var min = 0;
-                            minus_@counter .classList.add("disabled");
-                            addToCartBtn_@counter .classList.add("disabled");
-                            if(max_@counter == 0){
+                            var product = databaseService.GetProduct(productId);
+                            <button class="btn btn-success item-add-to-cart-btn" id="add-to-cart-btn-@counter" onclick="redirect_@counter ()"><i class="bi bi-cart"></i>Add to cart</button>
+                            <script>
+                                var minus_@counter = document.getElementById("minus-@counter");
+                                var plus_@counter = document.getElementById("plus-@counter");
+                                var number_@counter = document.getElementById("number-@counter");
+                                var num_@counter = 0;
+                                var addToCartBtn_@counter = document.getElementById("add-to-cart-btn-@counter");
+                                var max_@counter = @product.Stock - @(cartProductAmount ?? 0);
+                                var min = 0;
+                                minus_@counter .classList.add("disabled");
+                                addToCartBtn_@counter .classList.add("disabled");
+                                if(max_@counter == 0){
                                 minus_@counter. classList.add("disabled");
                                 plus_@counter .classList.add("disabled");
-                            }
-                            function increase_@counter (){
+                                }
+                                function increase_@counter (){
                                 if(num_@counter < max_@counter){
-                                    num_@counter = num_@counter + 1;
-                                    addToCartBtn_@counter .classList.remove("disabled");
-                                    minus_@counter .classList.remove("disabled");
+                                num_@counter = num_@counter + 1;
+                                addToCartBtn_@counter .classList.remove("disabled");
+                                minus_@counter .classList.remove("disabled");
                                 }
                                 if(num_@counter == max_@counter){
-                                    plus_@counter .classList.add("disabled");
+                                plus_@counter .classList.add("disabled");
                                 }
                                 number_@counter .value = num_@counter;                            
-                            }
-                            function decrease_@counter (){
+                                }
+                                function decrease_@counter (){
                                 if(num_@counter > min){
-                                    num_@counter = num_@counter - 1;
-                                    addToCartBtn_@counter .classList.remove("disabled");
-                                    plus_@counter .classList.remove("disabled");
+                                num_@counter = num_@counter - 1;
+                                addToCartBtn_@counter .classList.remove("disabled");
+                                plus_@counter .classList.remove("disabled");
                                 }
                                 if(num_@counter == min){
-                                    addToCartBtn_@counter .classList.add("disabled");
-                                    minus_@counter .classList.add("disabled");
+                                addToCartBtn_@counter .classList.add("disabled");
+                                minus_@counter .classList.add("disabled");
                                 }
                                 number_@counter .value = num_@counter;
-                            
-                            }
-                            function redirect_@counter (){
+
+                                }
+                                function redirect_@counter (){
                                 const url = window.location.href;
                                 let domain = new URL(url);
                                 location.replace(domain.origin + "/Cart/AddToCart/" + @productId + "?amount=" + number_@counter .value)
-                            }                        
-                      
-                        </script>
+                                }                        
+
+                            </script>
+                        }
+                        else
+                        {
+                            <span class="text-danger out-of-stock-item">Out of stock</span>
+                        }
                     </div>
                 </li>
             }

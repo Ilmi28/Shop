@@ -27,16 +27,23 @@ namespace Shop.Services
             var monitors = _context.Monitors.ToList();
             return monitors;
         }
-        public Models.Product? GetProductMonitorByIdAndCategory(int? id)
+        public Models.Product? GetProductByMonitorNativeId(int? id)
         {
-            var product = _context.Products.Where(x => x.ProductNativeId == id && x.ProductCategoryId == 1).FirstOrDefault();
+            var monitorCategory = _context.Categories.FirstOrDefault(x => x.Name == "Monitors");
+            var product = _context.Products.Where(x => x.ProductNativeId == id && x.ProductCategoryId == monitorCategory.Id).FirstOrDefault();
             return product;
         }
-        public Models.Product? GetProduct(int id)
+        public Models.Product? GetProductBySmartphoneNativeId(int? id)
+        {
+            var smartphoneCategory = _context.Categories.FirstOrDefault(x => x.Name == "Smartphones");
+            var product = _context.Products.FirstOrDefault(x => x.ProductNativeId == id && x.ProductCategoryId == smartphoneCategory.Id);
+            return product;
+        }
+        public Models.Product? GetProduct(int? id)
         {
             return _context.Products.FirstOrDefault(x => x.Id == id);
         }
-        public Models.CartProduct? GetCartProdut(int id)
+        public Models.CartProduct? GetCartProduct(int id)
         {
             return _context.CartProducts.FirstOrDefault(x => x.Id == id);
         }

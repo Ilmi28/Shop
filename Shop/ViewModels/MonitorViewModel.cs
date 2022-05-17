@@ -4,14 +4,19 @@ namespace Shop.ViewModels
 {
     public class MonitorViewModel
     {        
-        public int Id { get; set; }        
-        public string Name { get; set; }        
-        public float Price { get; set; }         
+        public int Id { get; set; }
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public float Price { get; set; }
+        [Required]
         public string Resolution { get; set; }        
-        [Display(Name = "Refresh rate")]        
+        [Display(Name = "Refresh rate")]
+        [Required]
         public string Refreshening { get; set; }
-        public int? CategoryId { get; set; }
         public bool DefaultPhoto { get; set; } = true;
         public IFormFile? MonitorPhoto { get; set; }
+        [Required]
+        public int Stock { get; set; }
     }
 }

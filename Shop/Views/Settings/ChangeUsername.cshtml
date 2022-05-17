@@ -4,8 +4,10 @@
 *@
 @model Shop.ViewModels.ChangeNameViewModel
 @inject Shop.Services.DatabaseService _databaseService
+@inject Shop.Services.UrlService urlService
 @{
     var userName = _databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier)).Name;
+    var previousUrl = urlService.GetPreviousUrl();
     ViewData["Title"] = "Change username";
 }
 <h1>Change username</h1>
@@ -23,5 +25,5 @@
     <br />
     <input type="submit" class="btn btn-dark change-username-email-save-btn" value="Save"/>
 </form>
-<a asp-controller="Settings" asp-action="Index" ><input value="Cancel" type="button" class="btn btn-primary change-username-email-cancel-btn"/></a>
+<a href="@previousUrl" ><input value="Cancel" type="button" class="btn btn-primary change-username-email-cancel-btn"/></a>
 <script src="~/js/changeUsernameValidation.js"></script>

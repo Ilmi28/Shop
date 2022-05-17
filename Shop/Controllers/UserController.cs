@@ -94,16 +94,13 @@ namespace Shop.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+            Response.Cookies.Delete("cartToken");
             return Redirect("/Home/Index");
         }
         public async Task<RedirectResult> SetCookie()
         {
             Response.Cookies.Append("cartToken", User.FindFirst("CartToken")?.Value);
             return Redirect("/Home/Index");
-        }
-        public IActionResult AccessDenied()
-        {
-            return View();
         }
         [Authorize]
         public IActionResult MyProfile()

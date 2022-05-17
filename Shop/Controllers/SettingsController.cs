@@ -17,7 +17,7 @@ namespace Shop.Controllers
     public class SettingsController : Controller
     {
         private readonly DatabaseService _databaseService;
-        private readonly AppIdentityDbContext _context;
+        private readonly AppIdentityDbContext _identityContext;
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IEmailSender _emailSender;
@@ -25,7 +25,9 @@ namespace Shop.Controllers
         private ILogger<SettingsController> _logger;
         private IWebHostEnvironment _env;
         private readonly IConfiguration _config;
-        public SettingsController(AppIdentityDbContext context, 
+        private readonly AppDbContext _context;
+        public SettingsController(AppIdentityDbContext identityContext, 
+            AppDbContext context,
             DatabaseService databaseService, 
             ILogger<SettingsController> logger, 
             UserManager<AppUser> userManager, 
@@ -36,7 +38,7 @@ namespace Shop.Controllers
             IConfiguration config) 
         {
             _databaseService = databaseService;
-            _context = context;
+            _identityContext = identityContext;
             _logger = logger;
             _userManager = userManager;
             _signInManager = signInManager;
@@ -44,6 +46,7 @@ namespace Shop.Controllers
             _cryptographyService = cryptographyService;
             _env = env;
             _config = config;
+            _context = context;
         }
         public IActionResult Index()
         {            
@@ -60,7 +63,7 @@ namespace Shop.Controllers
             if (ModelState.IsValid)
             {
                 user.Name = changeNameViewModel.Name;
-                _context.SaveChanges();
+                _identityContext.SaveChanges();
                 return RedirectToAction("Index");
             }
             _logger.LogError("Error");
@@ -71,16 +74,24 @@ namespace Shop.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult ChangeEmail([Bind("Email")]ChangeEmailViewModel changeEmailViewModel)
+        public async Task<IActionResult> ChangeEmail([Bind("Email")]ChangeEmailViewModel changeEmailViewModel)
         {
             var user = _databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
             if (ModelState.IsValid)
             {
+                if(changeEmailViewModel.Email == user.Email)
+                {
+                    ModelState.AddModelError(String.Empty, "This email is already yours");
+                    return View();
+                }
                 user.Email = changeEmailViewModel.Email;
                 user.NormalizedEmail = changeEmailViewModel.Email.ToUpper();
                 user.UserName = changeEmailViewModel.Email;
                 user.NormalizedUserName = changeEmailViewModel.Email.ToUpper();
-                _context.SaveChanges();
+                user.EmailConfirmed = false;
+                user.HasProStatus = false;
+                await _identityContext.SaveChangesAsync();
+                await _signInManager.RefreshSignInAsync(user);
                 return RedirectToAction("Index");
             }
             return View();
@@ -119,10 +130,21 @@ namespace Shop.Controllers
             if(decryptedToken == token)
             {
                 var user = _databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                var userProducts = _context.Products.Where(x => x.Creator == user.Id).ToList();
+                var cartProducts = _context.CartProducts.Where(x => x.CartToken == user.CartToken).ToList();
+                foreach(var cartProduct in cartProducts)
+                {
+                    _context.CartProducts.Remove(cartProduct);
+                }
+                foreach(var product in userProducts)
+                {
+                    _context.Products.Remove(product);
+                }
                 await _signInManager.SignOutAsync();
                 await _emailSender.SendEmailAsync(user.Email, "Account deleted", "Your account has been deleted successfully;(");
-                _context.Users.Remove(user); 
-                _context.SaveChanges();
+                _identityContext.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                await _identityContext.SaveChangesAsync();
                 return Redirect($"/Settings/SuccessfulAccountDeleting/{decryptedToken}");
             }
             return NotFound();
@@ -193,7 +215,7 @@ namespace Shop.Controllers
             if (result.Succeeded)
             {
                 user.HasProStatus = true;
-                await _context.SaveChangesAsync();
+                await _identityContext.SaveChangesAsync();
                 await _signInManager.RefreshSignInAsync(user);
                 return RedirectToAction("SuccessfulEmailConfirmation", new { userId = userId });
             }
@@ -236,7 +258,7 @@ namespace Shop.Controllers
                 System.IO.File.Delete(oldFilePath);
             }
             user.UserPhoto = fileName;
-            _context.SaveChanges();
+            _identityContext.SaveChanges();
             return Redirect("/User/MyProfile");
         }
     }

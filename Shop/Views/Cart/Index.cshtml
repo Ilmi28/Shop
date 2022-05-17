@@ -1,9 +1,13 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@inject Shop.Services.DatabaseService databaseService
+@inject Shop.Data.AppDbContext context;
+@inject Shop.Services.UrlService urlService
 @{
     float sum = 0;
     int counter = 0;
+    urlService.SetPreviousUrl();
 }
 <h1 class="display-5">Your cart: </h1>
 <hr />
@@ -16,9 +20,17 @@ else{
     <div class="cart-item-block">
         <ul>
         @foreach(var cartItem in Model){
-            <li class="cart-item-block-li">
-                <div class="cart-item-photo-block"><img class="cart-item-img" src="~/img/monitorImages/@cartItem.Photo"></div>
-                <h2 class="cart-item-name">@cartItem.Name</h2>
+            Product product = databaseService.GetProduct(cartItem.ProductId);
+            var categoryName = context.Categories.FirstOrDefault(x => x.Id == product.ProductCategoryId)?.Name;
+                string photoFolderName = String.Empty;
+                if(categoryName == "Monitors")
+                    photoFolderName = "monitorImages";
+                if(categoryName == "Smartphones")
+                    photoFolderName = "smartphonesImages";
+
+                <li class="cart-item-block-li">
+                <div class="cart-item-photo-block"><img class="cart-item-img" src="~/img/@photoFolderName/@cartItem.Photo"></div>
+                <h2 class="cart-item-name">@cartItem.Name <span class="text-muted" style="font-size: 17px; font-weight: 400;"> - @categoryName</span></h2>
                 <p class="cart-item-price">Price: @(cartItem.Price)$</p>
                 <ul class="cart-amount-bar">
                     <a asp-controller="Cart" id="cart-minus-btn-link-@counter" asp-action="SubstractCartProduct" asp-route-id="@cartItem.Id" >
@@ -30,7 +42,7 @@ else{
                     </a>
                 </ul>
                 <a asp-controller="Cart" asp-action="Delete" asp-route-id="@cartItem.Id"><button class="btn btn-danger cart-delete-item-btn"><i class="bi bi-trash-fill"></i></button></a>
-            </li>
+            </li> 
             <script>
                 var cartPlusBtn_@counter = document.getElementById("cart-plus-btn-@counter");
                 var cartPlusBtnLink_@counter = document.getElementById("cart-plus-btn-link-@counter");
@@ -42,7 +54,7 @@ else{
                     cartMinusBtn_@counter .classList.add("disabled");
                     cartMinusBtnLink_@counter .style.pointerEvents = "none";
                 }
-                if (cartQuantity_@counter .value == 30) {
+                if (cartQuantity_@counter .value == @product.Stock) {
                     cartPlusBtn_@counter .classList.add("disabled");
                     cartPlusBtnLink_@counter .style.pointerEvents = "none";
                 }

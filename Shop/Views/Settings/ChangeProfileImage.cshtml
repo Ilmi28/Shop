@@ -4,8 +4,10 @@
 *@
 @model Shop.ViewModels.UserViewModel
 @inject Shop.Services.DatabaseService _databaseService;
+@inject Shop.Services.UrlService urlService
 @{
     var user = _databaseService.GetUser(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+    var previousUrl = urlService.GetPreviousUrl();
 }
 <h1>Change profile image</h1>
 <hr />
@@ -20,5 +22,5 @@
     </div>
     <br />
     <input class="btn btn-dark change-user-photo-submit" type="submit" value="Save"/>
-    <a asp-controller="Settings" asp-action="Index"><input type="button" class="btn btn-primary change-user-photo-cancel" value="Cancel"/></a>
+    <a href="@previousUrl"><input type="button" class="btn btn-primary change-user-photo-cancel" value="Cancel"/></a>
 </form>

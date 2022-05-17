@@ -1,0 +1,89 @@
+﻿@using System.Security.Claims
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject Shop.Data.AppDbContext context
+@inject IHttpContextAccessor httpContextAccessor
+@inject Shop.Services.DatabaseService databaseService
+@inject Shop.Services.UrlService urlService
+@{
+    ViewData["Title"] = "See more";
+    string cartId = httpContextAccessor.HttpContext.Request.Cookies["cartToken"];
+    int nativeId = Model.Id;
+    int? productId = databaseService.GetProductBySmartphoneNativeId(nativeId)?.Id;
+    int? cartProductAmount = databaseService.GetCartProductByProductIdAndCartToken(productId, cartId)?.Quantity;
+    var product = databaseService.GetProduct(productId);
+    var user = databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+    urlService.SetPreviousUrl();
+}
+<div class="photo-block-details"><img class="item-photo-details" style="border: solid black 1px;"  src="~/img/smartphonesImages/@product.ProductPhoto"/></div>
+<h1 class="display-5 item-name-details">@Model.Name</h1>
+<div class="item-parameters-details">
+    <p>Price: @Model.Price</p>
+    <p>Camera Resolution: @(Model.CameraResolution)px</p>
+    <p>Screen Diagonal: @(Model.ScreenDiagonal)"</p>
+    <p>Memory: @(Model.Memory)GB</p>
+    <p>RAM: @(Model.RAM)GB</p>
+    <p>Stock: @Model.Stock</p>
+</div>
+<div class="counter-and-buttons">
+    @if(!User.Identity.IsAuthenticated && product.Stock != 0 || User.Identity.IsAuthenticated && Model.Creator != user.Id && Model.Stock != 0){
+        <ul class="counter-details">
+            <li class="btn btn-dark minus-details disabled" id="minus-details" onclick="decrease()">-</li>
+            <li class="btn"><input style="width: 30px" disabled value="0" id="number-details"/></li>
+            <li class="btn btn-dark plus-details" id="plus-details" onclick="increase()">+</li>
+        </ul>
+        <button class="btn btn-success add-to-cart-details-btn disabled" id="add-to-cart-btn" onclick="redirect()"><i class="bi bi-cart"></i>Add to cart</button>
+        <script>
+            var plus = document.getElementById("plus-details");
+            var minus = document.getElementById("minus-details");
+            var number = document.getElementById("number-details");
+            var addToCartBtn = document.getElementById("add-to-cart-btn");
+            var num = 0;
+            var max = @product.Stock - @(cartProductAmount ?? 0);
+            var min = 0;
+            if(max == 0){
+                plus.classList.add("disabled");
+                minus.classList.add("disabled");
+            }
+            function increase(){
+                num += 1;
+                minus.classList.remove("disabled");
+                addToCartBtn.classList.remove("disabled");
+                if(num >= max){
+                    num = max;
+                    plus.classList.add("disabled");
+                }
+                number.value = num;
+                number.innerHTML = num;
+            }
+            function decrease(){
+                num -= 1;
+                plus.classList.remove("disabled");
+                if(num <= 0){
+                    num = min;
+                    addToCartBtn.classList.add("disabled");
+                    minus.classList.add("disabled");
+                }
+                number.value = num;
+                number.innerHTML = num;
+            }
+            function redirect(){
+                const url = window.location.href;
+                let domain = new URL(url);
+                location.replace(domain.origin + "/Cart/AddToCart/" + @productId + "?amount=" + num);
+            }
+        </script>
+    }
+    @if(Model.Stock == 0)
+    {
+        <h4 class="text-danger">Out of stock</h4>
+    }
+    @if (User.Identity.IsAuthenticated && Model.Creator == user.Id)
+    {
+        <div class="buttons-details">
+            <a asp-controller="Smartphones" asp-action="Edit" asp-route-id="@Model.Id" ><input type="button" class="btn btn-warning edit-button-details" value="Edit"/></a>
+            <a asp-controller="Smartphones" asp-action="Delete" asp-route-id="@Model.Id" ><input type="button" class="btn btn-danger delete-button-details" value="Delete"/></a>
+        </div>
+    }
+</div>

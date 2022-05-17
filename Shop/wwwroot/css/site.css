@@ -100,6 +100,12 @@ body {
     display: flex;
     justify-content: center;
 }
+.out-of-stock-item{
+    position: absolute;
+    right: 20px;
+    font-size: 16px;
+    margin-top: 100px;
+}
 .item-content{
     position: relative;
     margin-top: 1%;
@@ -117,17 +123,22 @@ body {
     position:absolute;
     top: 50px;
 }
-.monitors-see-more {
+.item-see-more {
     left: 330px;
     font-size: 13px;
     position: absolute;
     text-decoration: none;
     color: dodgerblue;
     transition: color ease-in-out 400ms;
-    top: 80px;
+    top: 100px;
 }
-.monitors-see-more:hover{
+.item-see-more:hover{
     color: deepskyblue;
+}
+.item-stock{
+    position: absolute;
+    left: 330px;
+    top: 75px;
 }
 .add-product-btn {
     position: absolute;
@@ -213,7 +224,16 @@ body {
     position: relative;
     margin-left: 35%;
 }
-.delete-button{
+.my-products-add-product-btn{
+    position: absolute;
+    right: 12%;
+    margin-top: -35px;
+}
+.my-products-add-product-btn:hover{
+    background-color: white;
+    color: black;
+}
+.delete-button {
     width: 150px;
     height: 40px;
     position: absolute;
@@ -262,9 +282,13 @@ body {
 }
 .item-name-details{
     position: absolute;
-    margin-left: 460px;
+    margin-left: 470px;
     top: 120px;
     font-weight: 400;
+}
+.out-of-stock-item-details {
+    left: 10px;
+    position: sticky;
 }
 .item-parameters-details{
     font-size: 16px;
@@ -272,8 +296,9 @@ body {
     margin-left: 470px;
     top: 200px;
 }
-.add-to-cart-monitor-details-btn{
+.add-to-cart-details-btn{
     position: absolute;
+    width: 110px;
     margin-top: 35px;
 }
 .counter-and-buttons{
@@ -305,7 +330,7 @@ body {
     background-color: white;
     color: red;
 }
-.add-to-cart-monitor-details-btn:hover{
+.add-to-cart-details-btn:hover{
     background-color: white;
     color: green;
     border: solid green 1px;
@@ -321,12 +346,15 @@ body {
     margin-top: 80px;
     position: absolute;
 }
-.cancel-button-edit:hover{
+.cancel-button{
+    width: 70px;
+}
+.cancel-button:hover{
     color:blue;
     background-color: white;
     border: solid blue 1px;
 }
-.monitors-add-to-cart-btn{
+.item-add-to-cart-btn{
     right: 6px;
     top: 100px;
     width: 110px;
@@ -337,7 +365,7 @@ body {
     border: solid black 1px;
     color: black;
 }
-.monitors-add-to-cart-btn:hover{
+.item-add-to-cart-btn:hover{
     background-color: white;
     border: solid green 1px;
     color: green;
@@ -510,7 +538,7 @@ body {
 }
 #cart-bar{
     position: absolute;
-    right: 10px;
+    right: 0px;
     top: 2px;
 }
 .settings-buttons button{
@@ -644,6 +672,7 @@ body {
     border: solid black 1px;
     margin-top: 20px;
     height: 100px;
+    position: relative;
     border-radius: 10px;
 }
 .my-product-photo{
@@ -666,13 +695,13 @@ body {
     font-size: 15px;
     position: absolute;
     margin-left: 200px;
-    margin-top: -65px;
+    margin-top: -75px;
 }
 .my-product-see-more{
     text-decoration: none;
     position: absolute;
-    margin-left: 200px;
-    margin-top: -40px;
+    left: 200px;
+    margin-top: -70px;
     color: dodgerblue;
     transition: color ease-in-out 400ms;
 }
@@ -698,11 +727,16 @@ body {
 }
 .my-product-buttons{
     position: absolute;
-    right: 205px;
-    margin-top: -33px;
+    right: 0.5%;
+    margin-top: -55px;
 }
 .my-product-category{
+    font-weight: 400;
     font-size: 18px;
+}
+.my-product-category-mobile{
+    visibility: hidden;
+    font-size: 15px;
 }
 @media (max-width: 575px){
     .sign-up-btn {
@@ -736,20 +770,26 @@ body {
     .cart-items-amount{
         right: 70px;
     }
-    .cart-item-block .cart-item-block-li{
+    .my-products-add-product-btn{
+        right: 10px;
+    }
+    .cart-item-block .cart-item-block-li {
         height: 180px;
     }
     .cart-amount-bar{
         left: 210px;
-        margin-top: -10px;
+        margin-top: 0px;
         width: 142px;
+    }
+    .cart-item-price{
+        margin-top: -35px;
     }
     .cart-delete-item-btn{
         margin-top: 40px;
         font-size: 12px;
     }
     #cart-bar{
-        margin-right: -10px;
+        margin-right: 0px;
     }
     #user-photo-navbar{
         left: 0px;
@@ -769,12 +809,26 @@ body {
     }
     .item-price{
         position: absolute;
-        margin-right: 70%;
         top: 220px;
         font-size: 18px;
         width: 200px;
         left: 20px;
         
+    }
+    .out-of-stock-item{
+        left: 20px;
+        top: 210px;
+    }
+    .item-stock{
+        position: absolute;
+        top: 247px;
+        width: 200px;
+        left: 20px;
+    }
+    .buttons-details{
+        position: relative;
+        margin-top: 40px;
+        margin-right: 150px;
     }
     .photo-block-details{
         justify-content: left;
@@ -796,10 +850,10 @@ body {
     .item-delete-btn{
         right: 1%;
     }
-    .monitors-see-more {
+    .item-see-more {
         position: absolute;
         margin-right: 70%;
-        top: 260px;
+        top: 270px;
         font-size: 14px;
         width: 200px;
         left: 20px;
@@ -809,12 +863,18 @@ body {
         height: 190px;
         z-index: -1;
     }
+    .photo-block-details{
+        position: relative;
+        margin-top: -20px;
+    }
     .item-name-details{
-        margin-top: 210px;
+        position: relative;
+        margin-top: 80px;
         margin-left: 0px;
     }
     .item-parameters-details{
-        margin-top: 200px;
+        margin-top: -40px;
+        position: relative;
         margin-left: 0px;
     }
     .details-line{
@@ -825,18 +885,18 @@ body {
     .form-group{
         width: 95%;
     }
-    .monitors-add-to-cart-btn{
+    .item-add-to-cart-btn{
         left: 15px;
-        top: 330px;
+        top: 340px;
     }
     .counter{
         left: -5px;
-        top: 235px;
+        top: 245px;
     }
     .counter-and-buttons{
-        position: absolute;
-        left: -5%;
-        top: 300px;
+        position: sticky;
+        margin-top: 240px;
+        margin-left: -25px;
     }
     .go-to-delivery-btn {
         right: 35px;
@@ -855,5 +915,36 @@ body {
         position: relative;
         margin-left: 65%;
         margin-top: -790px;
+    }
+    .my-product-block{
+        height: 150px;
+    }
+    .my-product-price{
+        top: 150px;
+        font-size: 12px;
+    }
+    .my-product-category{
+        visibility: hidden;
+    }
+    .my-product-category-mobile{
+        visibility: visible;
+        left: 200px;
+        position: absolute;
+        top: 35px;
+    }
+    .my-product-see-more{
+        top: 125px;
+    }
+    .my-product-buttons{
+        top: 170px;
+    }
+    .delete-button{
+        width: 100px;
+        left: -20%;
+    }
+    .return-button{
+        width: 100px;
+        position: center;
+        left: 30%;
     }
 }

@@ -113,6 +113,14 @@ function emailCheck(field, errorField, x) {
         field.classList.add("is-valid");
     }
 }
+function floatInputCheck(field, errorfield, x) {
+    if (/[^0-9,]/.test(field.value)) {
+        x.preventDefault();
+        field.classList.add("is-invalid");
+        field.classList.remove("is-valid");
+        errorfield.innerHTML = "You must write a decimal number here(1,23 for example)"
+    }
+}
 const USER_IMAGE_INPUT = document.getElementById("change-user-photo");
 const CHANGE_PHOTO_PREVIEW = document.getElementById("change-photo-preview");
 USER_IMAGE_INPUT.onchange = evt => {
