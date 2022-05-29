@@ -11,6 +11,7 @@
 <hr />
 <br />
 <form asp-action="Index" id="order-form">
+    <div asp-validation-summary="All"></div>
     <div class="form-group">
         <label asp-for="FirstName"></label>
         <input asp-for="FirstName" class="form-control" id="order-first-name"/>
@@ -58,26 +59,29 @@
         <small id="order-phone-error"></small>
     </div>
     <br />
-    <h1>Delivery</h1>
-    <hr />
+    <div class="form-group">
+        <label asp-for="DeliveryMethod"></label>
+        <select asp-for="DeliveryMethod" class="form-control" id="delivery-method">
+            <option value="" selected disabled>SELECT</option>
+            @foreach(var deliveryMethod in deliveryMethods)
+            {
+                <option value="@deliveryMethod.Name">@deliveryMethod.Name - @deliveryMethod.Price$</option>
+            }
+        </select>
+        <small id="delivery-method-error"></small>
+    </div>
     <br />
-    <small id="order-delivery-radio-error"></small><br />
-    @foreach(var delivery in deliveryMethods)
-    {
-        <input type="radio" value="@delivery.Name" asp-for="DeliveryMethod" id="@delivery.Name" name="delivery"/>
-        <label for="@delivery.Name">@delivery.Name@("(up to " + delivery.DurationInHours + " hours)") @if (delivery.Price != 0) { @("- " + delivery.Price + "$") } else { @("- free") }</label><br />
-    }
-    <br />
-    <br />
-    <h1>Payment</h1>
-    <hr />
-    <br />
-    <small id="order-payment-radio-error"></small><br />
-    @foreach(var payment in paymentMethods)
-    {
-        <input type="radio" value="@payment.Name" asp-for="PaymentMethod" id="@payment.Name" name="payment"/>
-        <label for="@payment.Name">@payment.Name @if (payment.Price != 0) { @("- " + payment.Price + "$") } else { @("- free") }</label><br />
-    }
+    <div class="form-group">
+        <label asp-for="PaymentMethod"></label>
+        <select asp-for="PaymentMethod" class="form-control" id="payment-method">
+            <option value="" selected disabled>SELECT</option>
+            @foreach(var paymentMethod in paymentMethods)
+            {
+                <option value="@paymentMethod.Name">@paymentMethod.Name - @paymentMethod.Price$</option>
+            }
+        </select>
+        <small id="payment-method-error"></small>
+    </div>
     <br />
     <br />
     <a asp-controller="Cart" asp-action="Index" ><input class="btn btn-dark order-back-btn" type="button" value="<< Back"/></a>

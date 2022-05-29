@@ -6,8 +6,8 @@ const ADDRESS = document.getElementById("order-address");
 const POST_CODE = document.getElementById("order-post-code");
 const EMAIL = document.getElementById("order-email");
 const PHONE_NUMBER = document.getElementById("order-phone");
-const DELIVERY_INPUTS = document.querySelectorAll('input[name="delivery"]');
-const PAYMENT_INPUTS = document.querySelectorAll('input[name="payment"]');
+const DELIVERY_METHOD = document.getElementById("delivery-method");
+const PAYMENT_METHOD = document.getElementById("payment-method");
 //errors
 const FIRST_NAME_ERROR = document.getElementById("order-first-name-error");
 const LAST_NAME_ERROR = document.getElementById("order-last-name-error");
@@ -16,8 +16,8 @@ const ADDRESS_ERROR = document.getElementById("order-address-error");
 const POST_CODE_ERROR = document.getElementById("order-post-code-error");
 const EMAIL_ERROR = document.getElementById("order-email-error");
 const PHONE_NUMBER_ERROR = document.getElementById("order-phone-error");
-const DELIVERY_RADIO_ERROR = document.getElementById("order-delivery-radio-error");
-const PAYMENT_RADIO_ERROR = document.getElementById("order-payment-radio-error");
+const DELIVERY_METHOD_ERROR = document.getElementById("delivery-method-error");
+const PAYMENT_METHOD_ERROR = document.getElementById("payment-method-error");
 //form
 var form = document.getElementById("order-form");
 
@@ -28,8 +28,8 @@ form.addEventListener('submit', (x) => {
     emptyFieldCheck(ADDRESS, ADDRESS_ERROR, x);
     emptyFieldCheck(POST_CODE, POST_CODE_ERROR, x);
     emptyFieldCheck(EMAIL, EMAIL_ERROR, x);
-    emptyRadioCheck(DELIVERY_INPUTS, DELIVERY_RADIO_ERROR, x);
-    emptyRadioCheck(PAYMENT_INPUTS, PAYMENT_RADIO_ERROR, x);
+    emptyFieldCheck(DELIVERY_METHOD, DELIVERY_METHOD_ERROR, x);
+    emptyFieldCheck(PAYMENT_METHOD, PAYMENT_METHOD_ERROR, x);
     if (PHONE_NUMBER.value != "")
         phoneNumberCheck(PHONE_NUMBER, PHONE_NUMBER_ERROR, x);
     if (PHONE_NUMBER.value == "") {

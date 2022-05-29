@@ -20,10 +20,11 @@ namespace Shop.ViewModels
         [Required]
         [EmailAddress]
         public string Email { get; set; }
-        [Phone]
         [Display(Name = "Phone Number(optional)")]
         public int? PhoneNumber { get; set; }
+        [Display(Name = "Payment Method")]
         public string PaymentMethod { get; set; }
+        [Display(Name = "Delivery Method")]
         public string DeliveryMethod { get; set; }
     }
 }

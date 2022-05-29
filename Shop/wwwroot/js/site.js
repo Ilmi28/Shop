@@ -114,28 +114,11 @@ function emailCheck(field, errorField, x) {
     }
 }
 function priceInputCheck(field, errorfield, x) {
-    if (!/^\d{0,8}(\,\d{1,2})?$/.test(field.value)) {
+    if (!/^\d{0,8}(\.\d{1,2})?$/.test(field.value)) {
         x.preventDefault();
         field.classList.add("is-invalid");
         field.classList.remove("is-valid");
         errorfield.innerHTML = "Invalid price";
-    }
-}
-function emptyRadioCheck(radioInputs, errorField, x) {
-    let selected;
-    for (const radioInput of radioInputs) {
-        if (radioInput.checked) {
-            selected = radioInput.value;
-            break;
-        }
-    }
-    if (selected == null) {
-        x.preventDefault();
-        errorField.innerHTML = "You must select one of the options";
-        errorField.style.color = "red";
-    }
-    else {
-        errorField.innerHTML = null;
     }
 }
 function phoneNumberCheck(field, errorField, x) {
