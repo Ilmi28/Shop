@@ -33,7 +33,7 @@ namespace Shop.Controllers
         [HttpPost]
         public async Task<IActionResult> Index([Bind("FirstName, LastName, City, Address, PostCode, Email, PhoneNumber, PaymentMethod, DeliveryMethod")] OrderViewModel orderViewModel)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && (orderViewModel.PhoneNumber.ToString().Length == 6 || orderViewModel.PhoneNumber == null))
             {
                 string? cartToken = Request.Cookies["cartToken"];
                 var cartProducts = _databaseService.GetUserCartProducts(cartToken);

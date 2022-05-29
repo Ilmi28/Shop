@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
-using Shop.Options;
 using System;
 using System.IO;
+using Shop.Services;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -9,18 +9,19 @@ namespace Shop.Services
 {
     public class CryptographyService
     {
-        public CipherOptions Options { get; set; }
-        public CryptographyService(IOptions<CipherOptions> options)
+        private readonly KeyVaultService _keyVault;
+        public CryptographyService(KeyVaultService keyVault)
         {
-            Options = options.Value;
+            _keyVault = keyVault;
         }
-        public string GetKey()
+
+        public async Task<string> GetKey()
         {
-            return Options.Key;
+            return _keyVault.GetSecret("CryptographyKey");
         }
-        public string GetIV()
+        public async Task<string> GetIV()
         {
-            return Options.IV;
+            return _keyVault.GetSecret("CryptographyIV");
         }
         public string Encrypt(string key, string iv, string plainText)
         {

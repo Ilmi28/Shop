@@ -18,7 +18,7 @@ namespace Shop.Models
         [Required]
         [EmailAddress]
         public string Email { get; set; }
-        [Phone]        
+        [Display(Name = "Phone Number")]
         public int? PhoneNumber { get; set; }
         public string PaymentMethod { get; set; }
         public string DeliveryMethod { get;set; }

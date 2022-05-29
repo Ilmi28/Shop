@@ -31,6 +31,10 @@ namespace Shop.Controllers
             {
                 return Redirect("/User/AccessDenied");
             }
+            if(product.Stock == 0)
+            {
+                return Redirect("/Cart");
+            }
             string cartId = Request.Cookies["cartToken"] ?? Guid.NewGuid().ToString();
             CookieOptions options = new CookieOptions();
             options.Expires = DateTime.Now.AddDays(7);

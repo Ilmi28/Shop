@@ -34,5 +34,5 @@ form.addEventListener('submit', (x) => {
     if (SMARTPHONE_DEFAULT_PHOTO.checked) {
         SMARTPHONE_PHOTO_ERROR.innerHTML = null;
     }
-    floatInputCheck(SMARTPHONE_PRICE, SMARTPHONE_PRICE_ERROR, x);
+    priceInputCheck(SMARTPHONE_PRICE, SMARTPHONE_PRICE_ERROR, x);
 });

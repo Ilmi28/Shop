@@ -5,8 +5,10 @@
 @inject Shop.Data.AppDbContext context
 @inject IConfiguration config
 @inject Shop.Services.UrlService urlService
+@inject Shop.Services.DatabaseService dbService
 @{
     var products = context.Products.Where(x => x.Creator == User.FindFirstValue(ClaimTypes.NameIdentifier)).ToList();
+    var user = dbService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
     urlService.SetPreviousUrl();
 }
 <h1>My Profile</h1>
@@ -24,7 +26,10 @@
 <br />
 <br />
 <h2>My products</h2>
-<a asp-controller="Home" asp-action="AddProduct"><button class="btn btn-dark my-products-add-product-btn">Add Product</button></a>
+@if (user.HasProStatus)
+{
+    <a asp-controller="Home" asp-action="AddProduct"><button class="btn btn-dark my-products-add-product-btn">Add Product</button></a>
+}
 <hr />
 @if(products.Count == 0)
 {

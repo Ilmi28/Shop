@@ -126,7 +126,7 @@ namespace Shop.Controllers
         public async Task<IActionResult> DeleteUserAccount(string token)
         {
             string? deleteUserToken = Request.Cookies["deleteUserToken"];
-            string decryptedToken = _cryptographyService.Decrypt(_cryptographyService.GetKey(), _cryptographyService.GetIV(), deleteUserToken);
+            string decryptedToken = _cryptographyService.Decrypt(await _cryptographyService.GetKey(), await _cryptographyService.GetIV(), deleteUserToken);
             if(decryptedToken == token)
             {
                 var user = _databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -150,14 +150,14 @@ namespace Shop.Controllers
             return NotFound();
         }
         [AllowAnonymous]
-        public IActionResult SuccessfulAccountDeleting(string id)
+        public async Task<IActionResult> SuccessfulAccountDeleting(string id)
         {
             string? deleteUserToken = Request.Cookies["deleteUserToken"];
             if(deleteUserToken == null)
             {
                 return NotFound();
             }
-            string decryptedToken = _cryptographyService.Decrypt(_cryptographyService.GetKey(), _cryptographyService.GetIV(), deleteUserToken);
+            string decryptedToken = _cryptographyService.Decrypt(await _cryptographyService.GetKey(), await _cryptographyService.GetIV(), deleteUserToken);
             if (decryptedToken == id)
             {
                 CookieOptions options = new CookieOptions();
@@ -174,7 +174,7 @@ namespace Shop.Controllers
             var user = _databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
             string deleteUserToken = Guid.NewGuid().ToString();
             string originalToken = deleteUserToken;
-            string encryptedToken = _cryptographyService.Encrypt(_cryptographyService.GetKey(), _cryptographyService.GetIV(), deleteUserToken);
+            string encryptedToken = _cryptographyService.Encrypt(await _cryptographyService.GetKey(), await _cryptographyService.GetIV(), deleteUserToken);
             Response.Cookies.Append("deleteUserToken", encryptedToken, options);
             var url = Url.Action("DeleteUserAccount", "Settings", new { token = originalToken }, protocol: Request.Scheme);
             await _emailSender.SendEmailAsync(user.Email, "Confirm deleting your account", $"<h3>Hello {user.Name}!</h3>" +

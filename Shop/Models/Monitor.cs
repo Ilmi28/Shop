@@ -11,6 +11,7 @@ namespace Shop.Models
         [Required]
         public string Name { get; set; }
         [Required]
+        [MaxLength(9)]
         public float Price { get; set; }
         [Required]
         public string Resolution { get; set; }

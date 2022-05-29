@@ -3,14 +3,14 @@ using Shop.Data;
 using Shop.Services;
 using Shop.Models;
 using Microsoft.AspNetCore.Identity;
-using Shop.Options;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Shop.RequirementsHandlers;
 using Shop.Requirements;
+using Microsoft.Extensions.Azure;
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("UserConnection")));
@@ -25,13 +25,12 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequiredUniqueChars = 0;
 });
-builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection("Mailkit"));
-builder.Services.Configure<CipherOptions>(builder.Configuration.GetSection("Cryptography"));
 builder.Services.AddTransient<IEmailSender, EmailService>();
 builder.Services.AddScoped<UrlService>();
 builder.Services.AddScoped<CryptographyService>();
 builder.Services.AddScoped<DatabaseService>();
 builder.Services.AddScoped<IAuthorizationHandler, ProductOwnerRequirementHandler>();
+builder.Services.AddSingleton<KeyVaultService>();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ProStatusOnly", policy => policy.RequireClaim("HasProStatus", "True"));

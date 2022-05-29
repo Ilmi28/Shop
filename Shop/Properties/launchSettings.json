@@ -1,4 +1,4 @@
-﻿{
+{
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
@@ -14,14 +14,22 @@
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7238;http://localhost:5130",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "VaultUri": "https://testshop1keyvault.vault.azure.net/",
+        "AZURE_USERNAME": "ilmialiev28@gmail.com",
+        "VaultKey": "https://testshop1keyvault.vault.azure.net/",
+        "KeyVault": "https://testshop1keyvault.vault.azure.net/"
       }
     },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "VaultUri": "https://testshop1keyvault.vault.azure.net/",
+        "AZURE_USERNAME": "ilmialiev28@gmail.com",
+        "VaultKey": "https://testshop1keyvault.vault.azure.net/",
+        "KeyVault": "https://testshop1keyvault.vault.azure.net/"
       }
     }
   }

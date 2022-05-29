@@ -113,12 +113,42 @@ function emailCheck(field, errorField, x) {
         field.classList.add("is-valid");
     }
 }
-function floatInputCheck(field, errorfield, x) {
-    if (/[^0-9,]/.test(field.value)) {
+function priceInputCheck(field, errorfield, x) {
+    if (!/^\d{0,8}(\,\d{1,2})?$/.test(field.value)) {
         x.preventDefault();
         field.classList.add("is-invalid");
         field.classList.remove("is-valid");
-        errorfield.innerHTML = "You must write a decimal number here(1,23 for example)"
+        errorfield.innerHTML = "Invalid price";
+    }
+}
+function emptyRadioCheck(radioInputs, errorField, x) {
+    let selected;
+    for (const radioInput of radioInputs) {
+        if (radioInput.checked) {
+            selected = radioInput.value;
+            break;
+        }
+    }
+    if (selected == null) {
+        x.preventDefault();
+        errorField.innerHTML = "You must select one of the options";
+        errorField.style.color = "red";
+    }
+    else {
+        errorField.innerHTML = null;
+    }
+}
+function phoneNumberCheck(field, errorField, x) {
+    if (field.value.length != 9 || /[^0-9]/.test(field.value)) {
+        x.preventDefault();
+        errorField.innerHTML = "Phone number is invalid";
+        field.classList.add("is-invalid");
+        errorField.style.color = "red";
+    }
+    if (field.value.length == 9 && !/[^0-9]/.test(field.value)) {
+        errorField.innerHTML = null;
+        field.classList.remove("is-invalid");
+        field.classList.add("is-valid");
     }
 }
 const USER_IMAGE_INPUT = document.getElementById("change-user-photo");

@@ -10,15 +10,17 @@
 <h1>Order</h1>
 <hr />
 <br />
-<form asp-action="Index">
+<form asp-action="Index" id="order-form">
     <div class="form-group">
         <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" class="form-control"/>
+        <input asp-for="FirstName" class="form-control" id="order-first-name"/>
+        <small id="order-first-name-error"></small>
     </div>
     <br />
     <div class="form-group">
         <label asp-for="LastName"></label>
-        <input asp-for="LastName" class="form-control"/>
+        <input asp-for="LastName" class="form-control" id="order-last-name"/>
+        <small id="order-last-name-error"></small>
     </div>
     <br />
     <div class="form-group">
@@ -28,35 +30,41 @@
     <br />
     <div class="form-group">
         <label asp-for="City"></label>
-        <input asp-for="City" class="form-control"/>
+        <input asp-for="City" class="form-control" id="order-city"/>
+        <small id="order-city-error"></small>
     </div>
     <br />
     <div class="form-group">
         <label asp-for="Address"></label>
-        <input asp-for="Address" class="form-control"/>
+        <input asp-for="Address" class="form-control" id="order-address"/>
+        <small id="order-address-error"></small>
     </div>
     <br />
     <div class="form-group">
         <label asp-for="PostCode"></label>
-        <input asp-for="PostCode" class="form-control" placeholder="77-777"/>
+        <input asp-for="PostCode" class="form-control" placeholder="00-000" id="order-post-code"/>
+        <small id="order-post-code-error"></small>
     </div>
     <br />
     <div class="form-group">
         <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control"/>
+        <input asp-for="Email" class="form-control" id="order-email"/>
+        <small id="order-email-error"></small>
     </div>
     <br />
     <div class="form-group">
         <label asp-for="PhoneNumber"></label>
-        <input asp-for="PhoneNumber" class="form-control"/>
+        <input asp-for="PhoneNumber" class="form-control" id="order-phone"/>
+        <small id="order-phone-error"></small>
     </div>
     <br />
     <h1>Delivery</h1>
     <hr />
     <br />
+    <small id="order-delivery-radio-error"></small><br />
     @foreach(var delivery in deliveryMethods)
     {
-        <input type="radio" value="@delivery.Name" asp-for="DeliveryMethod" id="@delivery.Name"/>
+        <input type="radio" value="@delivery.Name" asp-for="DeliveryMethod" id="@delivery.Name" name="delivery"/>
         <label for="@delivery.Name">@delivery.Name@("(up to " + delivery.DurationInHours + " hours)") @if (delivery.Price != 0) { @("- " + delivery.Price + "$") } else { @("- free") }</label><br />
     }
     <br />
@@ -64,9 +72,10 @@
     <h1>Payment</h1>
     <hr />
     <br />
+    <small id="order-payment-radio-error"></small><br />
     @foreach(var payment in paymentMethods)
     {
-        <input type="radio" value="@payment.Name" asp-for="PaymentMethod" id="@payment.Name"/>
+        <input type="radio" value="@payment.Name" asp-for="PaymentMethod" id="@payment.Name" name="payment"/>
         <label for="@payment.Name">@payment.Name @if (payment.Price != 0) { @("- " + payment.Price + "$") } else { @("- free") }</label><br />
     }
     <br />
@@ -74,3 +83,4 @@
     <a asp-controller="Cart" asp-action="Index" ><input class="btn btn-dark order-back-btn" type="button" value="<< Back"/></a>
     <input class="btn btn-dark go-to-delivery-btn" type="submit" value="Go to payment >>"/>
 </form>
+<script src="~/js/orderFormValidation.js"></script>

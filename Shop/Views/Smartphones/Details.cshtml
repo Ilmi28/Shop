@@ -16,7 +16,7 @@
     var user = databaseService.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
     urlService.SetPreviousUrl();
 }
-<div class="photo-block-details"><img class="item-photo-details" style="border: solid black 1px;"  src="~/img/smartphonesImages/@product.ProductPhoto"/></div>
+<div class="photo-block-details"><img class="item-photo-details" src="~/img/smartphonesImages/@product.ProductPhoto"/></div>
 <h1 class="display-5 item-name-details">@Model.Name</h1>
 <div class="item-parameters-details">
     <p>Price: @Model.Price</p>

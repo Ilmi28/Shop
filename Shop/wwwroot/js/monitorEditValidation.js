@@ -30,5 +30,5 @@ form.addEventListener('submit', (x) => {
         MONITOR_PHOTO_ERROR.innerHTML = null;
         MONITOR_PHOTO.classList.remove("is-invalid");
     }
-    floatInputCheck(MONITOR_PRICE, MONITOR_PRICE_ERROR, x);
+    priceInputCheck(MONITOR_PRICE, MONITOR_PRICE_ERROR, x);
 });
