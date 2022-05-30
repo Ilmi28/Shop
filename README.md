@@ -18,7 +18,9 @@ To gain pro status just confirm your email by clicking `confirm email` in user s
 Yes, you can do it by clicking buttons `edit` and `delete` next to corresponding product
 
 # Creating account 
-To create account just click `Sign up` and provide necessary data like email, username and password. By default you'll have inactive pro status and default profile image
+To create account just click `Sign up` and provide necessary data like email, username and password. By default you'll have inactive pro status and default profile image *(example of how basic account will look like you can find below)*
+
+![image](https://user-images.githubusercontent.com/86533605/171046858-44d6c811-2461-4661-b1a5-dd319c1fdc1f.png)
 
 # User settings
 
