@@ -47,6 +47,7 @@ You can also delete your account by clicking `delete account` in user settings a
 
 - C#(C Sharp)
 - .NET
+- Entity Framework
 - Javascript
 - SQL/MySQL
 - HTML
